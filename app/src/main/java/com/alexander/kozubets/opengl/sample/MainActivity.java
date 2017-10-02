@@ -1,10 +1,13 @@
 package com.alexander.kozubets.opengl.sample;
 
-import android.support.v7.app.AppCompatActivity;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.support.v7.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
+public class MainActivity extends AppCompatActivity implements GLSurfaceView.Renderer {
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -15,15 +18,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Example of a call to a native method
-        TextView tv = (TextView) findViewById(R.id.sample_text);
-        tv.setText(stringFromJNI());
+        GLSurfaceView glSurfaceView = (GLSurfaceView) findViewById(R.id.glView);
+        glSurfaceView.setRenderer(this);
     }
 
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    public native String stringFromJNI();
+    @Override
+    public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
+
+    }
+
+    @Override
+    public void onSurfaceChanged(GL10 gl10, int i, int i1) {
+
+    }
+
+    @Override
+    public void onDrawFrame(GL10 gl10) {
+
+    }
 }
