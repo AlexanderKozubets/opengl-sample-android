@@ -19,5 +19,6 @@ public class OpenGlView extends GLSurfaceView {
 
     private void init(Context context, AttributeSet attrs) {
         setEGLContextFactory(new ContextFactory());
+        setRenderer(NativeRenderer.get());
     }
 }
