@@ -127,7 +127,7 @@ void renderFrame() {
     checkGlError("glUseProgram");
 
     static const GLfloat gTriangleVertices[] = {
-             0.0f,  1.0f, // top vertex
+            -1.0f,  1.0f, // left top vertex
             -1.0f, -1.0f, // left bottom vertex
              1.0f, -1.0f  // right bottom vertex
     };
