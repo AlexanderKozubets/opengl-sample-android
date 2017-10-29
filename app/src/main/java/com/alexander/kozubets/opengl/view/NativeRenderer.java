@@ -2,9 +2,12 @@ package com.alexander.kozubets.opengl.view;
 
 
 import android.opengl.GLSurfaceView;
+import android.support.annotation.NonNull;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import static com.alexander.kozubets.opengl.utils.Preconditions.nonNull;
 
 public class NativeRenderer implements GLSurfaceView.Renderer {
 
@@ -14,14 +17,17 @@ public class NativeRenderer implements GLSurfaceView.Renderer {
 
     private static NativeRenderer renderer;
 
-    public static NativeRenderer get() {
+    public static NativeRenderer get(@NonNull ShaderRepository shaderRepository) {
         if (renderer == null) {
-            renderer = new NativeRenderer();
+            renderer = new NativeRenderer(shaderRepository);
         }
         return renderer;
     }
 
-    private NativeRenderer() {
+    private ShaderRepository shaderRepository;
+
+    private NativeRenderer(@NonNull ShaderRepository shaderRepository) {
+        this.shaderRepository = nonNull(shaderRepository);
     }
 
     @Override

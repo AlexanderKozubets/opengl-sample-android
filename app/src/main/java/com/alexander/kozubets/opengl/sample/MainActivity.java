@@ -4,6 +4,8 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.alexander.kozubets.opengl.view.NativeRenderer;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -11,5 +13,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         GLSurfaceView glSurfaceView = (GLSurfaceView) findViewById(R.id.glView);
+        glSurfaceView.setRenderer(NativeRenderer.get(new AssetsShaderRepository(getApplicationContext(), "shaders")));
     }
 }
