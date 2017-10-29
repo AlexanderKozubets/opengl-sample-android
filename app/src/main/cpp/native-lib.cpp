@@ -16,17 +16,9 @@ static void checkGlError(const char* operation) {
     }
 }
 
-auto gVertexShader =
-        "attribute vec4 vPosition;\n"
-                "void main() {\n"
-                "  gl_Position = vPosition;\n"
-                "}\n";
+const char* gVertexShader;
 
-auto gFragmentShader =
-        "precision mediump float;\n"
-                "void main() {\n"
-                "  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);\n"
-                "}\n";
+const char* gFragmentShader;
 
 GLuint loadShader(GLenum shaderType, const char* pSource) {
     GLuint shader = glCreateShader(shaderType);
@@ -145,19 +137,55 @@ void renderFrame() {
 
 extern "C" {
 JNIEXPORT void JNICALL Java_com_alexander_kozubets_opengl_view_NativeRenderer_init(
-        JNIEnv *env, jclass type, jint width, jint height);
+        JNIEnv *env, jobject jobj, jint width, jint height);
 
 JNIEXPORT void JNICALL Java_com_alexander_kozubets_opengl_view_NativeRenderer_draw(
-        JNIEnv *env, jclass type);
+        JNIEnv *env, jobject jobj);
 };
 
+jobject getShaderRepository(JNIEnv *env, jobject renderer) {
+    jclass javaClass = env->GetObjectClass(renderer);
+    jfieldID fieldId = env->GetFieldID(javaClass, "shaderRepository", "Lcom/alexander/kozubets/opengl/view/ShaderRepository;");
+    jobject repo = env->GetObjectField(renderer, fieldId);
+    env->DeleteLocalRef(javaClass);
+    return repo;
+}
+
+void loadShaders(JNIEnv *env, jobject shaderRepository) {
+//    jvm->AttachCurrentThread(&myEnv, 0);
+
+    jstring vertexShaderName = env->NewStringUTF("draw_color.vert");
+    jstring fragmentShaderName = env->NewStringUTF("draw_color.frag");
+
+    jclass javaClass = env->GetObjectClass(shaderRepository);
+    if (javaClass == NULL) {
+        LOGI("ERROR - cant find class");
+    }
+
+    jmethodID method = env->GetMethodID(javaClass, "getShader", "(Ljava/lang/String;)Ljava/lang/String;");
+    if (method == NULL) {
+        LOGI("ERROR - cant access method");
+    }
+
+    jstring vertexShader = (jstring) env->CallObjectMethod(shaderRepository, method, vertexShaderName);
+    jstring fragmentShader = (jstring) env->CallObjectMethod(shaderRepository, method, fragmentShaderName);
+
+    jboolean isCopy;
+    gVertexShader = env->GetStringUTFChars(vertexShader, &isCopy);
+    gFragmentShader = env->GetStringUTFChars(fragmentShader, &isCopy);
+//    if (isCopy) {
+//        env->ReleaseStringUTFChars(vertexShader, gVertexShader);
+//    }
+}
+
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_view_NativeRenderer_init(JNIEnv *env, jclass type, jint width,
+Java_com_alexander_kozubets_opengl_view_NativeRenderer_init(JNIEnv *env, jobject jobj, jint width,
                                                             jint height) {
+    loadShaders(env, getShaderRepository(env, jobj));
     setupGraphics(width, height);
 }
 
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_view_NativeRenderer_draw(JNIEnv *env, jclass type) {
+Java_com_alexander_kozubets_opengl_view_NativeRenderer_draw(JNIEnv *env, jobject jobj) {
     renderFrame();
 }
