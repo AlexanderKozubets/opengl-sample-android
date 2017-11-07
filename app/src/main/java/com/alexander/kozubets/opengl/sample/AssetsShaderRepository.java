@@ -8,13 +8,14 @@ import android.support.annotation.Nullable;
 import com.alexander.kozubets.opengl.view.ShaderRepository;
 
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import static com.alexander.kozubets.opengl.utils.Preconditions.nonEmpty;
 import static com.alexander.kozubets.opengl.utils.Preconditions.nonNull;
+import static com.alexander.kozubets.opengl.utils.StreamUtils.close;
+import static com.alexander.kozubets.opengl.utils.StreamUtils.log;
 
 public class AssetsShaderRepository implements ShaderRepository {
 
@@ -56,23 +57,5 @@ public class AssetsShaderRepository implements ShaderRepository {
 
     protected String getPath(String folder, String name) {
         return String.format("%s/%s", folder, name);
-    }
-
-    protected void close(@Nullable Closeable resource) {
-        if (resource != null) {
-            try {
-                resource.close();
-            } catch (IOException e) {
-                if (BuildConfig.DEBUG) {
-                    log(e);
-                }
-            }
-        }
-    }
-
-    protected void log(@NonNull Throwable throwable) {
-        if (BuildConfig.DEBUG) {
-            nonNull(throwable).printStackTrace();
-        }
     }
 }

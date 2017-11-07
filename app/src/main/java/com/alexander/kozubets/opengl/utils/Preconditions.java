@@ -14,4 +14,8 @@ public class Preconditions {
         if (nonNull(ref).length() == 0) throw new IllegalArgumentException("Should not be empty!");
         return ref;
     }
+
+    private Preconditions() throws IllegalAccessException {
+        throw new IllegalAccessException();
+    }
 }
