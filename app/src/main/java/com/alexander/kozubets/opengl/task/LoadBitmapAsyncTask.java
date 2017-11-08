@@ -7,20 +7,17 @@ import android.os.AsyncTask;
 import com.alexander.kozubets.opengl.utils.StreamUtils;
 
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 
 import static com.alexander.kozubets.opengl.utils.Preconditions.nonNull;
 
-public class LoadTextureBytesAsyncTask extends AsyncTask<InputStream, Float, byte[]> {
+public class LoadBitmapAsyncTask extends AsyncTask<InputStream, Float, Bitmap> {
 
     @Override
-    protected byte[] doInBackground(InputStream... streams) {
+    protected Bitmap doInBackground(InputStream... streams) {
         InputStream inputStream = nonNull(streams[0]);
         Bitmap bitmap = loadBitmap(inputStream);
         StreamUtils.close(inputStream);
-        byte[] pixels = getPixels(bitmap);
-        bitmap.recycle();
-        return pixels;
+        return bitmap;
     }
 
     private Bitmap loadBitmap(InputStream inputStream) {
@@ -30,10 +27,11 @@ public class LoadTextureBytesAsyncTask extends AsyncTask<InputStream, Float, byt
         return bitmap;
     }
 
-    private byte[] getPixels(Bitmap src) {
+    // TODO: 11/8/17 reuse somewhere or delete
+    /*private byte[] getPixels(Bitmap src) {
         int bytes = src.getByteCount();
         ByteBuffer buffer = ByteBuffer.allocate(bytes);
         src.copyPixelsToBuffer(buffer);
         return buffer.array();
-    }
+    }*/
 }

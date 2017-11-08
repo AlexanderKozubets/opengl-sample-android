@@ -189,3 +189,9 @@ JNIEXPORT void JNICALL
 Java_com_alexander_kozubets_opengl_view_NativeRenderer_draw(JNIEnv *env, jobject jobj) {
     renderFrame();
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_alexander_kozubets_opengl_view_NativeRenderer_onTextureLoaded(JNIEnv *env, jobject instance) {
+    // TODO
+}
