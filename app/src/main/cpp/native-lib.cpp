@@ -14,10 +14,12 @@ static void printGlValue(const char *name, GLenum glEnum) {
 
 static void checkGlError(const char* operation) {
     while (GLint error = glGetError()) {
-        LOGI("After %s() glError (0x%x)\n", operation, error);
+        LOGE("After %s glError (0x%x)\n", operation, error);
         abort();
     }
 }
+
+#define GL(f) f; checkGlError(#f)
 
 GLuint gTextureId = 0;
 
@@ -31,8 +33,7 @@ bool setupGraphics(int w, int h) {
     printGlValue("Extensions", GL_EXTENSIONS);
     LOGI("setupGraphics(%d, %d)", w, h);
 
-    glViewport(0, 0, w, h);
-    checkGlError("glViewport");
+    GL(glViewport(0, 0, w, h));
     return true;
 }
 
@@ -40,26 +41,21 @@ void renderSimple() {
     gSimpleProgram->use();
 
     GLuint gvPositionHandle;
-    gvPositionHandle = glGetAttribLocation(gSimpleProgram->getId(), "vPosition");
-    checkGlError("glGetAttribLocation");
+    GL(gvPositionHandle = glGetAttribLocation(gSimpleProgram->getId(), "vPosition"));
     LOGI("glGetAttribLocation(\"vPosition\") = %d\n", gvPositionHandle);
-    checkGlError("glUseProgram");
 
     static const GLfloat gTriangleVertices[] = {
             -1.0f,  1.0f, 0.0f, // left top vertex,     0 index
             -1.0f, -1.0f, 0.0f, // left bottom vertex,  1 index
-            1.0f, -1.0f, 0.0f, // right bottom vertex, 2 index
-            1.0f,  1.0f, 0.0f  // right top vertex,    3 index
+             1.0f, -1.0f, 0.0f, // right bottom vertex, 2 index
+             1.0f,  1.0f, 0.0f  // right top vertex,    3 index
     };
 
     const GLubyte indices[] = { 0, 1, 2, 2, 3, 0};
 
-    glVertexAttribPointer(gvPositionHandle, 3, GL_FLOAT, GL_FALSE, 0, gTriangleVertices);
-    checkGlError("glVertexAttribPointer");
-    glEnableVertexAttribArray(gvPositionHandle);
-    checkGlError("glEnableVertexAttribArray");
-    glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
-    checkGlError("glDrawArrays");
+    GL(glVertexAttribPointer(gvPositionHandle, 3, GL_FLOAT, GL_FALSE, 0, gTriangleVertices));
+    GL(glEnableVertexAttribArray(gvPositionHandle));
+    GL(glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices));
 }
 
 void renderTexture(Shader* shader, GLint textureId) {
@@ -68,39 +64,33 @@ void renderTexture(Shader* shader, GLint textureId) {
     static const GLfloat gTriangleVertices[] = {
             -1.0f,  1.0f, 0.0f, // left top vertex,     0 index
             -1.0f, -1.0f, 0.0f, // left bottom vertex,  1 index
-            1.0f, -1.0f, 0.0f, // right bottom vertex, 2 index
-            1.0f,  1.0f, 0.0f  // right top vertex,    3 index
+             1.0f, -1.0f, 0.0f, // right bottom vertex, 2 index
+             1.0f,  1.0f, 0.0f  // right top vertex,    3 index
     };
 
     const GLubyte indices[] = { 0, 1, 2, 2, 3, 0};
 
     // Set vertices
     GLuint gvPositionHandle;
-    gvPositionHandle = glGetAttribLocation(shader->getId(), "vPosition");
-    checkGlError("glGetAttribLocation");
+    GL(gvPositionHandle = glGetAttribLocation(shader->getId(), "vPosition"));
     LOGI("glGetAttribLocation(\"vPosition\") = %d\n", gvPositionHandle);
-    checkGlError("glUseProgram");
-    glVertexAttribPointer(gvPositionHandle, 3, GL_FLOAT, GL_FALSE, 0, gTriangleVertices);
-    checkGlError("glVertexAttribPointer");
-    glEnableVertexAttribArray(gvPositionHandle);
-    checkGlError("glEnableVertexAttribArray");
 
-//    // Set texture
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureId);
-    glUniform1i(glGetUniformLocation(shader->getId(), "tex"), 0);
+    GL(glVertexAttribPointer(gvPositionHandle, 3, GL_FLOAT, GL_FALSE, 0, gTriangleVertices));
+    GL(glEnableVertexAttribArray(gvPositionHandle));
 
-    glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
-    checkGlError("glDrawArrays");
+    // Set texture
+    GL(glActiveTexture(GL_TEXTURE0));
+    GL(glBindTexture(GL_TEXTURE_2D, textureId));
+    GL(glUniform1i(glGetUniformLocation(shader->getId(), "tex"), 0));
+
+    GL(glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices));
 
     shader->unuse();
 }
 
 void renderFrame() {
-    glClearColor(.0f, .0f, .0f, 1.0f);
-    checkGlError("glClearColor");
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    checkGlError("glClear");
+    GL(glClearColor(.0f, .0f, .0f, 1.0f));
+    GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
 
     if (gTextureId) {
         renderTexture(gTextureProgram, gTextureId);
