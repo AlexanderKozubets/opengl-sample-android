@@ -15,10 +15,11 @@ static void printGlValue(const char *name, GLenum glEnum) {
 static void checkGlError(const char* operation) {
     while (GLint error = glGetError()) {
         LOGI("After %s() glError (0x%x)\n", operation, error);
+        abort();
     }
 }
 
-GLuint textureId = 0;
+GLuint gTextureId = 0;
 
 Shader* gSimpleProgram = 0;
 Shader* gTextureProgram = 0;
@@ -35,12 +36,7 @@ bool setupGraphics(int w, int h) {
     return true;
 }
 
-void renderFrame() {
-    glClearColor(.0f, .0f, .0f, 1.0f);
-    checkGlError("glClearColor");
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    checkGlError("glClear");
-
+void renderSimple() {
     gSimpleProgram->use();
 
     GLuint gvPositionHandle;
@@ -52,8 +48,8 @@ void renderFrame() {
     static const GLfloat gTriangleVertices[] = {
             -1.0f,  1.0f, 0.0f, // left top vertex,     0 index
             -1.0f, -1.0f, 0.0f, // left bottom vertex,  1 index
-             1.0f, -1.0f, 0.0f, // right bottom vertex, 2 index
-             1.0f,  1.0f, 0.0f  // right top vertex,    3 index
+            1.0f, -1.0f, 0.0f, // right bottom vertex, 2 index
+            1.0f,  1.0f, 0.0f  // right top vertex,    3 index
     };
 
     const GLubyte indices[] = { 0, 1, 2, 2, 3, 0};
@@ -64,6 +60,53 @@ void renderFrame() {
     checkGlError("glEnableVertexAttribArray");
     glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
     checkGlError("glDrawArrays");
+}
+
+void renderTexture(Shader* shader, GLint textureId) {
+    shader->use();
+
+    static const GLfloat gTriangleVertices[] = {
+            -1.0f,  1.0f, 0.0f, // left top vertex,     0 index
+            -1.0f, -1.0f, 0.0f, // left bottom vertex,  1 index
+            1.0f, -1.0f, 0.0f, // right bottom vertex, 2 index
+            1.0f,  1.0f, 0.0f  // right top vertex,    3 index
+    };
+
+    const GLubyte indices[] = { 0, 1, 2, 2, 3, 0};
+
+    // Set vertices
+    GLuint gvPositionHandle;
+    gvPositionHandle = glGetAttribLocation(shader->getId(), "vPosition");
+    checkGlError("glGetAttribLocation");
+    LOGI("glGetAttribLocation(\"vPosition\") = %d\n", gvPositionHandle);
+    checkGlError("glUseProgram");
+    glVertexAttribPointer(gvPositionHandle, 3, GL_FLOAT, GL_FALSE, 0, gTriangleVertices);
+    checkGlError("glVertexAttribPointer");
+    glEnableVertexAttribArray(gvPositionHandle);
+    checkGlError("glEnableVertexAttribArray");
+
+//    // Set texture
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+    glUniform1i(glGetUniformLocation(shader->getId(), "tex"), 0);
+
+    glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
+    checkGlError("glDrawArrays");
+
+    shader->unuse();
+}
+
+void renderFrame() {
+    glClearColor(.0f, .0f, .0f, 1.0f);
+    checkGlError("glClearColor");
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    checkGlError("glClear");
+
+    if (gTextureId) {
+        renderTexture(gTextureProgram, gTextureId);
+    } else {
+        renderSimple();
+    }
 }
 
 extern "C" {
@@ -120,6 +163,7 @@ Java_com_alexander_kozubets_opengl_view_NativeRenderer_init(JNIEnv *env, jobject
                                                             jint height) {
     jobject shaderRepository = getShaderRepository(env, jobj);
     gSimpleProgram = loadShaders(env, shaderRepository, "draw_color");
+    gTextureProgram = loadShaders(env, shaderRepository, "draw_texture");
     setupGraphics(width, height);
 }
 
@@ -130,6 +174,10 @@ Java_com_alexander_kozubets_opengl_view_NativeRenderer_draw(JNIEnv *env, jobject
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_view_NativeRenderer_onTextureLoaded(JNIEnv *env, jobject instance) {
-    // TODO
+Java_com_alexander_kozubets_opengl_view_NativeRenderer_onTextureLoaded(JNIEnv *env, jobject instance, jint textureId) {
+    if (gTextureId) {
+        glDeleteTextures(1, &gTextureId);
+        gTextureId = 0;
+    }
+    gTextureId = textureId;
 }

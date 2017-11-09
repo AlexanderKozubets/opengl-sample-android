@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onTextureCreated(int textureId) {
                             Log.i("CreateTexture", "Texture id: " + textureId);
-                            renderer.onTextureLoaded();
+                            renderer.onTextureLoaded(textureId);
                         }
                     });
                     loadTextureBytesAsyncTask = null;

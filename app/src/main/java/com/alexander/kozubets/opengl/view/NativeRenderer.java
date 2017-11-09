@@ -45,7 +45,7 @@ public class NativeRenderer implements GLSurfaceView.Renderer {
         draw();
     }
 
-    public native void onTextureLoaded();
+    public native void onTextureLoaded(int textureId);
 
     private native void init(int width, int height);
 
