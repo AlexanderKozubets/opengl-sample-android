@@ -1,9 +1,11 @@
 #include <jni.h>
 #include "log_macros.h"
+#include "Shader.h"
 
 #include <GLES2/gl2.h>
 
 #include <stdlib.h>
+#include <string>
 
 static void printGlValue(const char *name, GLenum glEnum) {
     const char *v = (const char *) glGetString(glEnum);
@@ -16,93 +18,17 @@ static void checkGlError(const char* operation) {
     }
 }
 
-const char* gVertexShader;
+GLuint textureId = 0;
 
-const char* gFragmentShader;
-
-GLuint loadShader(GLenum shaderType, const char* pSource) {
-    GLuint shader = glCreateShader(shaderType);
-    if (shader) {
-        glShaderSource(shader, 1, &pSource, NULL);
-        glCompileShader(shader);
-        GLint compiled = 0;
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
-        if (!compiled) {
-            GLint infoLen = 0;
-            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
-            if (infoLen) {
-                char* buf = (char*) malloc(infoLen);
-                if (buf) {
-                    glGetShaderInfoLog(shader, infoLen, NULL, buf);
-                    LOGE("Could not compile shader %d:\n%s\n",
-                         shaderType, buf);
-                    free(buf);
-                }
-                glDeleteShader(shader);
-                shader = 0;
-            }
-        }
-    }
-    return shader;
-}
-
-GLuint createProgram(const char* pVertexSource, const char* pFragmentSource) {
-    GLuint vertexShader = loadShader(GL_VERTEX_SHADER, pVertexSource);
-    if (!vertexShader) {
-        return 0;
-    }
-
-    GLuint pixelShader = loadShader(GL_FRAGMENT_SHADER, pFragmentSource);
-    if (!pixelShader) {
-        return 0;
-    }
-
-    GLuint program = glCreateProgram();
-    if (program) {
-        glAttachShader(program, vertexShader);
-        checkGlError("glAttachShader");
-        glAttachShader(program, pixelShader);
-        checkGlError("glAttachShader");
-        glLinkProgram(program);
-        GLint linkStatus = GL_FALSE;
-        glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
-        if (linkStatus != GL_TRUE) {
-            GLint bufLength = 0;
-            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &bufLength);
-            if (bufLength) {
-                char* buf = (char*) malloc(bufLength);
-                if (buf) {
-                    glGetProgramInfoLog(program, bufLength, NULL, buf);
-                    LOGE("Could not link program:\n%s\n", buf);
-                    free(buf);
-                }
-            }
-            glDeleteProgram(program);
-            program = 0;
-        }
-    }
-    return program;
-}
-
-GLuint gProgram;
-GLuint gvPositionHandle;
+Shader* gSimpleProgram = 0;
+Shader* gTextureProgram = 0;
 
 bool setupGraphics(int w, int h) {
     printGlValue("Version", GL_VERSION);
     printGlValue("Vendor", GL_VENDOR);
     printGlValue("Renderer", GL_RENDERER);
     printGlValue("Extensions", GL_EXTENSIONS);
-
     LOGI("setupGraphics(%d, %d)", w, h);
-    gProgram = createProgram(gVertexShader, gFragmentShader);
-    if (!gProgram) {
-        LOGE("Could not create program.");
-        return false;
-    }
-    gvPositionHandle = glGetAttribLocation(gProgram, "vPosition");
-    checkGlError("glGetAttribLocation");
-    LOGI("glGetAttribLocation(\"vPosition\") = %d\n",
-         gvPositionHandle);
 
     glViewport(0, 0, w, h);
     checkGlError("glViewport");
@@ -115,7 +41,12 @@ void renderFrame() {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     checkGlError("glClear");
 
-    glUseProgram(gProgram);
+    gSimpleProgram->use();
+
+    GLuint gvPositionHandle;
+    gvPositionHandle = glGetAttribLocation(gSimpleProgram->getId(), "vPosition");
+    checkGlError("glGetAttribLocation");
+    LOGI("glGetAttribLocation(\"vPosition\") = %d\n", gvPositionHandle);
     checkGlError("glUseProgram");
 
     static const GLfloat gTriangleVertices[] = {
@@ -151,11 +82,14 @@ jobject getShaderRepository(JNIEnv *env, jobject renderer) {
     return repo;
 }
 
-void loadShaders(JNIEnv *env, jobject shaderRepository) {
+Shader* loadShaders(JNIEnv *env, jobject shaderRepository, const char *name) {
 //    jvm->AttachCurrentThread(&myEnv, 0);
 
-    jstring vertexShaderName = env->NewStringUTF("draw_color.vert");
-    jstring fragmentShaderName = env->NewStringUTF("draw_color.frag");
+    std::string vsh = name + std::string(".vert");
+    std::string fsh = name + std::string(".frag");
+
+    jstring vertexShaderName = env->NewStringUTF(vsh.c_str());
+    jstring fragmentShaderName = env->NewStringUTF(fsh.c_str());
 
     jclass javaClass = env->GetObjectClass(shaderRepository);
     if (javaClass == NULL) {
@@ -171,17 +105,21 @@ void loadShaders(JNIEnv *env, jobject shaderRepository) {
     jstring fragmentShader = (jstring) env->CallObjectMethod(shaderRepository, method, fragmentShaderName);
 
     jboolean isCopy;
-    gVertexShader = env->GetStringUTFChars(vertexShader, &isCopy);
-    gFragmentShader = env->GetStringUTFChars(fragmentShader, &isCopy);
+    const char* strVertexShader = env->GetStringUTFChars(vertexShader, &isCopy);
+    const char* strFragmentShader = env->GetStringUTFChars(fragmentShader, &isCopy);
+
 //    if (isCopy) {
 //        env->ReleaseStringUTFChars(vertexShader, gVertexShader);
 //    }
+
+    return new Shader(strVertexShader, strFragmentShader);
 }
 
 JNIEXPORT void JNICALL
 Java_com_alexander_kozubets_opengl_view_NativeRenderer_init(JNIEnv *env, jobject jobj, jint width,
                                                             jint height) {
-    loadShaders(env, getShaderRepository(env, jobj));
+    jobject shaderRepository = getShaderRepository(env, jobj);
+    gSimpleProgram = loadShaders(env, shaderRepository, "draw_color");
     setupGraphics(width, height);
 }
 
