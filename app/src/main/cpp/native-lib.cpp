@@ -88,12 +88,53 @@ void renderTexture(Shader* shader, GLint textureId) {
     shader->unuse();
 }
 
+void renderTextureWithTransform(Shader* shader, GLint textureId) {
+    shader->use();
+
+    static const GLfloat gTriangleVertices[] = {
+            -1.0f,  1.0f, 0.0f, // left top vertex,     0 index
+            -1.0f, -1.0f, 0.0f, // left bottom vertex,  1 index
+            1.0f, -1.0f, 0.0f, // right bottom vertex, 2 index
+            1.0f,  1.0f, 0.0f  // right top vertex,    3 index
+    };
+
+    const GLubyte indices[] = { 0, 1, 2, 2, 3, 0};
+
+    // Set vertices
+    GLuint gvPositionHandle;
+    GL(gvPositionHandle = glGetAttribLocation(shader->getId(), "vPosition"));
+    LOGI("glGetAttribLocation(\"vPosition\") = %d\n", gvPositionHandle);
+
+    GL(glVertexAttribPointer(gvPositionHandle, 3, GL_FLOAT, GL_FALSE, 0, gTriangleVertices));
+    GL(glEnableVertexAttribArray(gvPositionHandle));
+
+    // Set texture
+    GL(glActiveTexture(GL_TEXTURE0));
+    GL(glBindTexture(GL_TEXTURE_2D, textureId));
+    GL(glUniform1i(glGetUniformLocation(shader->getId(), "tex"), 0));
+
+    GLuint modelViewProjectionHandle;
+    GL(modelViewProjectionHandle = glGetUniformLocation(shader->getId(), "uMVPMatrix"));
+    const GLfloat *matrix = new GLfloat[16]
+            {1, 0, 0, 0,
+             0, 1, 0, 0,
+             0, 0, 1, 0,
+             0, 0, 0, 1
+            };
+    GL(glUniformMatrix4fv(modelViewProjectionHandle, 1, GL_FALSE, matrix));
+
+    GL(glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices));
+
+    shader->unuse();
+}
+
 void renderFrame() {
     GL(glClearColor(.0f, .0f, .0f, 1.0f));
     GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
 
     if (gTextureId) {
-        renderTexture(gTextureProgram, gTextureId);
+//        renderTexture(gTextureProgram, gTextureId);
+        renderTextureWithTransform(gTextureProgram, gTextureId);
     } else {
         renderSimple();
     }
@@ -153,7 +194,7 @@ Java_com_alexander_kozubets_opengl_view_NativeRenderer_init(JNIEnv *env, jobject
                                                             jint height) {
     jobject shaderRepository = getShaderRepository(env, jobj);
     gSimpleProgram = loadShaders(env, shaderRepository, "draw_color");
-    gTextureProgram = loadShaders(env, shaderRepository, "draw_texture");
+    gTextureProgram = loadShaders(env, shaderRepository, "draw_texture_2");
     setupGraphics(width, height);
 }
 
