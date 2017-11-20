@@ -3,8 +3,9 @@
 //
 
 #include <malloc.h>
+#include <utils/log_macros.h>
 #include "Shader.h"
-#include "log_macros.h"
+#include "GL2.h"
 
 Shader::Shader(const char *vsh, const char *fsh) {
     id = createProgram(vsh, fsh);
@@ -15,7 +16,7 @@ GLuint Shader::getId() {
 }
 
 void Shader::use() {
-    glUseProgram(id);
+    GL2::useProgram(id);
 }
 
 void Shader::unuse() {
@@ -23,24 +24,24 @@ void Shader::unuse() {
 }
 
 GLuint Shader::loadShader(GLenum shaderType, const char *pSource) {
-    GLuint shader = glCreateShader(shaderType);
+    GLuint shader = GL2::createShader(shaderType);
     if (shader) {
-        glShaderSource(shader, 1, &pSource, NULL);
-        glCompileShader(shader);
+        GL2::shaderSource(shader, 1, &pSource, NULL);
+        GL2::compileShader(shader);
         GLint compiled = 0;
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+        GL2::getShaderiv(shader, GL_COMPILE_STATUS, &compiled);
         if (!compiled) {
             GLint infoLen = 0;
-            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
+            GL2::getShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
             if (infoLen) {
                 char* buf = (char*) malloc(infoLen);
                 if (buf) {
-                    glGetShaderInfoLog(shader, infoLen, NULL, buf);
+                    GL2::getShaderInfoLog(shader, infoLen, NULL, buf);
                     LOGE("Could not compile shader %d:\n%s\n",
                          shaderType, buf);
                     free(buf);
                 }
-                glDeleteShader(shader);
+                GL2::deleteShader(shader);
                 shader = 0;
             }
         }
@@ -61,25 +62,23 @@ GLuint Shader::createProgram(const char* pVertexSource, const char* pFragmentSou
 
     GLuint program = glCreateProgram();
     if (program) {
-        glAttachShader(program, vertexShader);
-//        checkGlError("glAttachShader");
-        glAttachShader(program, pixelShader);
-//        checkGlError("glAttachShader");
-        glLinkProgram(program);
+        GL2::attachShader(program, vertexShader);
+        GL2::attachShader(program, pixelShader);
+        GL2::linkProgram(program);
         GLint linkStatus = GL_FALSE;
-        glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
+        GL2::getProgramiv(program, GL_LINK_STATUS, &linkStatus);
         if (linkStatus != GL_TRUE) {
             GLint bufLength = 0;
-            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &bufLength);
+            GL2::getProgramiv(program, GL_INFO_LOG_LENGTH, &bufLength);
             if (bufLength) {
                 char* buf = (char*) malloc(bufLength);
                 if (buf) {
-                    glGetProgramInfoLog(program, bufLength, NULL, buf);
+                    GL2::getProgramInfoLog(program, bufLength, NULL, buf);
                     LOGE("Could not link program:\n%s\n", buf);
                     free(buf);
                 }
             }
-            glDeleteProgram(program);
+            GL2::deleteProgram(program);
             program = 0;
         }
     }
