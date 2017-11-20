@@ -1,0 +1,8 @@
+//
+// Created by Sasha on 11/20/17.
+//
+
+#ifndef OPENGL_SAMPLE_ANDROID_SCENE_H
+#define OPENGL_SAMPLE_ANDROID_SCENE_H
+
+#endif //OPENGL_SAMPLE_ANDROID_SCENE_H
