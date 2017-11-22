@@ -6,6 +6,7 @@
 #define OPENGL_SAMPLE_ANDROID_MATR4_H
 
 #include <string.h>
+#include <cmath>
 
 class matr4 {
 private:
@@ -54,6 +55,17 @@ public:
                         0, 1, 0, 0,
                         0, 0, 1, 0,
                         tx,ty,tz,1
+                });
+    }
+
+    static matr4 rotate(float angleRad) {
+        const float a = angleRad;
+        return matr4(
+                new float[16] {
+                         cosf(a), sinf(a), 0, 0,
+                        -sinf(a), cosf(a), 0, 0,
+                              0,        0, 1, 0,
+                              0,        0, 0, 1
                 });
     }
 };
