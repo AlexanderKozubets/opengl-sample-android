@@ -12,6 +12,7 @@ add_library(native-lib SHARED ${SOURCES} )
 
 target_include_directories(native-lib PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}
+     ${CMAKE_CURRENT_SOURCE_DIR}/math
      ${CMAKE_CURRENT_SOURCE_DIR}/utils
      ${CMAKE_CURRENT_SOURCE_DIR}/gl_wrapper)
 
