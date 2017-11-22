@@ -15,9 +15,6 @@ private:
 public:
 
     matr4(float matrix[16]) {
-        size_t sz1 = sizeof(matrix);
-        size_t sz2 = sizeof(float);
-        size_t length = sz1 / sz2;
         memcpy(&m, matrix, 16 * sizeof(float));
     }
 
