@@ -8,12 +8,15 @@
 #include <string>
 #include <gl_wrapper/GL2.h>
 #include <utils/gl_error_check.h>
+#include <math/matr4.h>
+#include <scenes/triangle/TriangleScene.h>
 
 GLuint gTextureId = 0;
 
 Shader* gSimpleProgram = 0;
 Shader* gTextureProgram = 0;
 
+//TODO: move to base IScene implementation
 bool setupGraphics(int w, int h) {
     printGlValue("Version", GL_VERSION);
     printGlValue("Vendor", GL_VENDOR);
@@ -100,13 +103,8 @@ void renderTextureWithTransform(Shader* shader, GLint textureId) {
     GL2::uniform1i(glGetUniformLocation(shader->getId(), "tex"), 0);
 
     GLuint modelViewProjectionHandle = GL2::getUniformLocation(shader->getId(), "uMVPMatrix");
-    const GLfloat *matrix = new GLfloat[16]
-            {1, 0, 0, 0,
-             0, 1, 0, 0,
-             0, 0, 1, 0,
-             0, 0, 0, 1
-            };
-    GL2::uniformMatrix4fv(modelViewProjectionHandle, 1, GL_FALSE, matrix);
+    matr4 matrix = matr4::identity();
+    GL2::uniformMatrix4fv(modelViewProjectionHandle, 1, GL_FALSE, matrix.ptr());
 
     GL2::drawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
 
@@ -133,6 +131,7 @@ JNIEXPORT void JNICALL Java_com_alexander_kozubets_opengl_view_NativeRenderer_dr
         JNIEnv *env, jobject jobj);
 };
 
+//TODO: move to base IScene implementation
 jobject getShaderRepository(JNIEnv *env, jobject renderer) {
     jclass javaClass = env->GetObjectClass(renderer);
     jfieldID fieldId = env->GetFieldID(javaClass, "shaderRepository", "Lcom/alexander/kozubets/opengl/view/ShaderRepository;");
@@ -141,6 +140,7 @@ jobject getShaderRepository(JNIEnv *env, jobject renderer) {
     return repo;
 }
 
+//TODO: move to base IScene implementation
 Shader* loadShaders(JNIEnv *env, jobject shaderRepository, const char *name) {
 //    jvm->AttachCurrentThread(&myEnv, 0);
 
