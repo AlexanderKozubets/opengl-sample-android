@@ -15,7 +15,7 @@ public abstract class ShaderNativeRenderer implements GLSurfaceView.Renderer {
     private ShaderRepository shaderRepository;
 
     @SuppressWarnings("unused")
-    private final int nativePointer = 0;
+    private final long nativePointer = 0;
 
     public ShaderNativeRenderer(@NonNull ShaderRepository shaderRepository) {
         this.shaderRepository = nonNull(shaderRepository);
@@ -39,9 +39,9 @@ public abstract class ShaderNativeRenderer implements GLSurfaceView.Renderer {
 
     protected abstract void construct();
 
-    protected abstract void destroy();
-
     protected abstract void init(int width, int height);
 
     protected abstract void draw();
+
+    protected native void destroy();
 }

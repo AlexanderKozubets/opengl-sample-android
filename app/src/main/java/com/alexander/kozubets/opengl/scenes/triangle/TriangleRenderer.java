@@ -16,9 +16,6 @@ public class TriangleRenderer extends ShaderNativeRenderer {
     protected native void construct();
 
     @Override
-    protected native void destroy();
-
-    @Override
     protected native void init(int width, int height);
 
     @Override

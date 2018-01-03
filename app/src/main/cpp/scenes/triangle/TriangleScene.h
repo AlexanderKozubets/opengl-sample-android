@@ -1,9 +1,9 @@
 #ifndef OPENGL_SAMPLE_ANDROID_SIMPLESCENE_H
 #define OPENGL_SAMPLE_ANDROID_SIMPLESCENE_H
 
-#include <scenes/IScene.h>
+#include <scenes/Scene.h>
 
-class TriangleScene : public IScene {
+class TriangleScene : public Scene {
 public:
     TriangleScene(Shader *shader);
 

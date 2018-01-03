@@ -16,7 +16,7 @@ GLuint gTextureId = 0;
 Shader* gSimpleProgram = 0;
 Shader* gTextureProgram = 0;
 
-//TODO: move to base IScene implementation
+//TODO: move to base Scene implementation
 bool setupGraphics(int w, int h) {
     printGlValue("Version", GL_VERSION);
     printGlValue("Vendor", GL_VENDOR);
@@ -131,7 +131,7 @@ JNIEXPORT void JNICALL Java_com_alexander_kozubets_opengl_view_NativeRenderer_dr
         JNIEnv *env, jobject jobj);
 };
 
-//TODO: move to base IScene implementation
+//TODO: move to base Scene implementation
 jobject getShaderRepository(JNIEnv *env, jobject renderer) {
     jclass javaClass = env->GetObjectClass(renderer);
     jfieldID fieldId = env->GetFieldID(javaClass, "shaderRepository", "Lcom/alexander/kozubets/opengl/view/ShaderRepository;");
@@ -140,7 +140,7 @@ jobject getShaderRepository(JNIEnv *env, jobject renderer) {
     return repo;
 }
 
-//TODO: move to base IScene implementation
+//TODO: move to base Scene implementation
 Shader* loadShaders(JNIEnv *env, jobject shaderRepository, const char *name) {
 //    jvm->AttachCurrentThread(&myEnv, 0);
 
@@ -196,4 +196,16 @@ Java_com_alexander_kozubets_opengl_view_NativeRenderer_onTextureLoaded(JNIEnv *e
         gTextureId = 0;
     }
     gTextureId = textureId;
+}
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
+    JNIEnv* env;
+
+    if (vm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK) {
+        return JNI_ERR; // JNI version not supported.
+    }
+
+    Scene::registerClass(env);
+
+    return  JNI_VERSION_1_6;
 }

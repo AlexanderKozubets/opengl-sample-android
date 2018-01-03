@@ -4,7 +4,7 @@
 #include <jni.h>
 #include "TriangleScene.h"
 
-TriangleScene::TriangleScene(Shader *shader) : IScene(shader) {
+TriangleScene::TriangleScene(Shader *shader) : Scene(shader) {
 
 }
 
@@ -34,36 +34,28 @@ void TriangleScene::draw() {
     shader->unuse();
 }
 
-extern "C"
+extern "C" {
+
 JNIEXPORT void JNICALL
 Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_construct(JNIEnv *env,
                                                                               jobject instance) {
-    TriangleScene* triangleScene = new TriangleScene(0);
-
+    TriangleScene *triangleScene = new TriangleScene(0);
+    Scene::setNativeScene(env, instance, triangleScene);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_destroy(JNIEnv *env,
-                                                                            jobject instance) {
-
-    // TODO
-}
-
-extern "C"
 JNIEXPORT void JNICALL
 Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_init(JNIEnv *env,
                                                                          jobject instance,
                                                                          jint width, jint height) {
-    // TODO
+    //TODO: init
 }
 
-extern "C"
 JNIEXPORT void JNICALL
 Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_draw(JNIEnv *env,
                                                                          jobject instance) {
+    Scene::getNativeScene(env, instance)->draw();
+}
 
-    // TODO
 }
 
 /*static JNINativeMethod gCameraMethods[] = {

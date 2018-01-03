@@ -7,6 +7,7 @@ set(SOURCES
   "native-lib.cpp"
   "Shader.cpp"
   "gl_wrapper/GL2.cpp"
+  "scenes/Scene.cpp"
   "scenes/triangle/TriangleScene.cpp"
   )
 
