@@ -2,7 +2,10 @@
 #include <gl_wrapper/GL2.h>
 #include <utils/log_macros.h>
 #include <jni.h>
+#include <string>
 #include "TriangleScene.h"
+
+class string;
 
 TriangleScene::TriangleScene(Shader *shader) : Scene(shader) {
 
@@ -13,6 +16,9 @@ TriangleScene::~TriangleScene() {
 }
 
 void TriangleScene::draw() {
+    GL2::clearColor(.0f, .0f, .0f, 1.0f);
+    GL2::clear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
     shader->use();
 
     GLuint gvPositionHandle = GL2::getAttribLocation(shader->getId(), "vPosition");
@@ -34,24 +40,72 @@ void TriangleScene::draw() {
     shader->unuse();
 }
 
+//TODO: move to base Scene implementation
+jobject getShaderRepository(JNIEnv *env, jobject renderer) {
+    jclass javaClass = env->GetObjectClass(renderer);
+    jfieldID fieldId = env->GetFieldID(javaClass, "shaderRepository", "Lcom/alexander/kozubets/opengl/view/ShaderRepository;");
+    jobject repo = env->GetObjectField(renderer, fieldId);
+    env->DeleteLocalRef(javaClass);
+    return repo;
+}
+
+//TODO: move to base Scene implementation
+Shader* loadShaders(JNIEnv *env, jobject shaderRepository, const char *name) {
+//    jvm->AttachCurrentThread(&myEnv, 0);
+
+    std::string vsh = name + std::string(".vert");
+    std::string fsh = name + std::string(".frag");
+
+    jstring vertexShaderName = env->NewStringUTF(vsh.c_str());
+    jstring fragmentShaderName = env->NewStringUTF(fsh.c_str());
+
+    jclass javaClass = env->GetObjectClass(shaderRepository);
+    if (javaClass == NULL) {
+        LOGI("ERROR - cant find class");
+    }
+
+    jmethodID method = env->GetMethodID(javaClass, "getShader", "(Ljava/lang/String;)Ljava/lang/String;");
+    if (method == NULL) {
+        LOGI("ERROR - cant access method");
+    }
+
+    jstring vertexShader = (jstring) env->CallObjectMethod(shaderRepository, method, vertexShaderName);
+    jstring fragmentShader = (jstring) env->CallObjectMethod(shaderRepository, method, fragmentShaderName);
+
+    jboolean isCopy;
+    const char* strVertexShader = env->GetStringUTFChars(vertexShader, &isCopy);
+    const char* strFragmentShader = env->GetStringUTFChars(fragmentShader, &isCopy);
+
+//    if (isCopy) {
+//        env->ReleaseStringUTFChars(vertexShader, gVertexShader);
+//    }
+
+    return new Shader(strVertexShader, strFragmentShader);
+}
+
+
 extern "C" {
 
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_construct(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_constructNative(JNIEnv *env,
                                                                               jobject instance) {
-    TriangleScene *triangleScene = new TriangleScene(0);
+    jobject shaderRepository = getShaderRepository(env, instance);
+    Shader* shader = loadShaders(env, shaderRepository, "draw_color");
+//    gTextureProgram = loadShaders(env, shaderRepository, "draw_texture_2");
+
+    TriangleScene *triangleScene = new TriangleScene(shader);
     Scene::setNativeScene(env, instance, triangleScene);
 }
 
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_init(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_initNative(JNIEnv *env,
                                                                          jobject instance,
                                                                          jint width, jint height) {
-    //TODO: init
+    Scene::getNativeScene(env, instance)->init(width, height);
 }
 
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_draw(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_drawNative(JNIEnv *env,
                                                                          jobject instance) {
     Scene::getNativeScene(env, instance)->draw();
 }

@@ -9,6 +9,8 @@ set(SOURCES
   "gl_wrapper/GL2.cpp"
   "scenes/Scene.cpp"
   "scenes/triangle/TriangleScene.cpp"
+  "scenes/texture/TextureScene.cpp"
+  "scenes/transformation/TransformationScene.cpp"
   )
 
 add_library(native-lib SHARED ${SOURCES} )
@@ -16,7 +18,9 @@ add_library(native-lib SHARED ${SOURCES} )
 target_include_directories(native-lib PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}
      ${CMAKE_CURRENT_SOURCE_DIR}/math
-     ${CMAKE_CURRENT_SOURCE_DIR}/scenes/simple
+     ${CMAKE_CURRENT_SOURCE_DIR}/scenes/triangle
+     ${CMAKE_CURRENT_SOURCE_DIR}/scenes/texture
+     ${CMAKE_CURRENT_SOURCE_DIR}/scenes/transformation
      ${CMAKE_CURRENT_SOURCE_DIR}/utils
      ${CMAKE_CURRENT_SOURCE_DIR}/gl_wrapper)
 

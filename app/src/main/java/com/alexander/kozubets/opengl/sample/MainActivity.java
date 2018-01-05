@@ -13,9 +13,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.alexander.kozubets.opengl.scenes.triangle.TriangleRenderer;
 import com.alexander.kozubets.opengl.task.LoadBitmapAsyncTask;
 import com.alexander.kozubets.opengl.utils.StreamUtils;
-import com.alexander.kozubets.opengl.view.NativeRenderer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +29,9 @@ public class MainActivity extends AppCompatActivity {
 
     private GLSurfaceView glSurfaceView;
 
-    private NativeRenderer renderer;
+    private TriangleRenderer renderer;
+
+    private AssetsShaderRepository shaderRepository;
 
     private LoadBitmapAsyncTask loadTextureBytesAsyncTask;
 
@@ -42,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
     protected void initView() {
         glSurfaceView = (GLSurfaceView) findViewById(R.id.glView);
-        renderer = NativeRenderer.get(new AssetsShaderRepository(getApplicationContext(), "shaders"));
+        shaderRepository = new AssetsShaderRepository(getApplicationContext(), "shaders");
+        renderer = new TriangleRenderer(shaderRepository);
         glSurfaceView.setRenderer(renderer);
         findViewById(R.id.btnLoadTexture).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onTextureCreated(int textureId) {
                             Log.i("CreateTexture", "Texture id: " + textureId);
-                            renderer.onTextureLoaded(textureId);
+//                            renderer.onTextureLoaded(textureId);
                         }
                     });
                     loadTextureBytesAsyncTask = null;

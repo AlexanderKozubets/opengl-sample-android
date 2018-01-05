@@ -21,6 +21,8 @@ public:
 
     virtual ~Scene();
 
+    virtual void init(int w, int h);
+
     virtual void draw() = 0;
 
     static void registerClass(JNIEnv* env);
