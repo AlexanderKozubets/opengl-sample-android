@@ -5,10 +5,12 @@
 
 class TransformationScene : public Scene {
 private:
+    Shader* transformTextureShader;
+
     GLuint textureId;
 
 public:
-    TransformationScene(Shader *shader);
+    TransformationScene(ShaderRepository *shaderRepository);
 
     virtual ~TransformationScene();
 

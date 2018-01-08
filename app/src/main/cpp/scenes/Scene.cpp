@@ -5,18 +5,17 @@
 
 jfieldID Scene::nativePointerFieldId = 0;
 
-Scene::Scene(Shader *shader) : shader(shader) {
-    LOGI("Scene::Scene start");
-    LOGI("Shader id: %d", shader->getId());
-    LOGI("Scene::Scene end");
+Scene::Scene(ShaderRepository *shaderRepository) : shaderRepository(shaderRepository) {
+    LOGI("Scene::Scene()");
 }
 
 Scene::~Scene() {
-    LOGI("Scene destructor was called");
-    if (shader) {
-        delete shader;
-        shader = NULL;
+    LOGI("Scene::~Scene start");
+    if (shaderRepository) {
+        delete shaderRepository;
+        shaderRepository = NULL;
     }
+    LOGI("Scene::~Scene end");
 }
 
 void Scene::init(int w, int h) {

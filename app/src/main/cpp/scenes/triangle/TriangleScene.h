@@ -4,12 +4,15 @@
 #include <scenes/Scene.h>
 
 class TriangleScene : public Scene {
-public:
-    TriangleScene(Shader *shader);
+private:
+    Shader* colorShader;
 
-    virtual void draw();
+public:
+    TriangleScene(ShaderRepository *shaderRepository);
 
     virtual ~TriangleScene();
+
+    virtual void draw();
 };
 
 #endif //OPENGL_SAMPLE_ANDROID_SIMPLESCENE_H

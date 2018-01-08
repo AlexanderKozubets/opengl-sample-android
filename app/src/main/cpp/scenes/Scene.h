@@ -8,16 +8,17 @@
 #include <Shader.h>
 #include <utils/log_macros.h>
 #include <jni.h>
+#include <repository/ShaderRepository.h>
 
 class Scene {
 private:
     static jfieldID nativePointerFieldId;
 
 protected:
-    Shader* shader;
+    ShaderRepository* shaderRepository;
 
 public:
-    Scene(Shader *shader);
+    Scene(ShaderRepository* shaderRepository);
 
     virtual ~Scene();
 

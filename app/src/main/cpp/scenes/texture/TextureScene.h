@@ -5,10 +5,12 @@
 
 class TextureScene : public Scene {
 private:
+    Shader* textureShader;
+
     GLuint textureId;
 
 public:
-    TextureScene(Shader *shader);
+    TextureScene(ShaderRepository *shaderRepository);
 
     virtual ~TextureScene();
 
