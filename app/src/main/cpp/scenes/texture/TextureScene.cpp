@@ -58,3 +58,28 @@ void TextureScene::draw() {
 
     textureShader->unuse();
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_alexander_kozubets_opengl_scenes_triangle_TextureRenderer_constructNative(JNIEnv *env,
+                                                                                   jobject instance,
+                                                                                   jobject shaderRepository) {
+    TextureScene *textureScene = new TextureScene(new ShaderRepository(env, shaderRepository));
+    Scene::setNativeScene(env, instance, textureScene);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_alexander_kozubets_opengl_scenes_triangle_TextureRenderer_initNative(JNIEnv *env,
+                                                                              jobject instance,
+                                                                              jint width,
+                                                                              jint height) {
+    Scene::getNativeScene(env, instance)->init(width, height);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_alexander_kozubets_opengl_scenes_triangle_TextureRenderer_drawNative(JNIEnv *env,
+                                                                              jobject instance) {
+    Scene::getNativeScene(env, instance)->draw();
+}
