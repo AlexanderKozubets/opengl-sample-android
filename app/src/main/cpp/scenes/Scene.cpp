@@ -5,14 +5,10 @@
 
 jfieldID Scene::nativePointerFieldId = 0;
 
-void Scene::init(int w, int h) {
-    printGlValue("Version", GL_VERSION);
-    printGlValue("Vendor", GL_VENDOR);
-    printGlValue("Renderer", GL_RENDERER);
-    printGlValue("Extensions", GL_EXTENSIONS);
-    LOGI("setupGraphics(%d, %d)", w, h);
-
-    GL2::viewport(0, 0, w, h);
+Scene::Scene(Shader *shader) : shader(shader) {
+    LOGI("Scene::Scene start");
+    LOGI("Shader id: %d", shader->getId());
+    LOGI("Scene::Scene end");
 }
 
 Scene::~Scene() {
@@ -23,7 +19,18 @@ Scene::~Scene() {
     }
 }
 
+void Scene::init(int w, int h) {
+    printGlValue("Version", GL_VERSION);
+    printGlValue("Vendor", GL_VENDOR);
+    printGlValue("Renderer", GL_RENDERER);
+    printGlValue("Extensions", GL_EXTENSIONS);
+    LOGI("setupGraphics(%d, %d)", w, h);
+
+    GL2::viewport(0, 0, w, h);
+}
+
 void Scene::registerClass(JNIEnv* env) {
+    LOGI("Scene::registerClass start");
     jclass clazz = env->FindClass("com/alexander/kozubets/opengl/view/ShaderNativeRenderer");
 
     if (clazz == 0) {
@@ -36,6 +43,8 @@ void Scene::registerClass(JNIEnv* env) {
         LOGE("No field was found!");
         abort();
     }
+
+    LOGI("Scene::registerClass end");
 }
 
 void Scene::setNativeScene(JNIEnv* env, jobject instance, Scene* scene) {
@@ -49,9 +58,11 @@ Scene* Scene::getNativeScene(JNIEnv* env, jobject instance) {
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_alexander_kozubets_opengl_view_ShaderNativeRenderer_destroy(JNIEnv *env, jobject instance) {
+    LOGI("Scene::destroy start");
     Scene* scene = Scene::getNativeScene(env, instance);
     if (scene) {
         delete scene;
         Scene::setNativeScene(env, instance, 0);
     }
+    LOGI("Scene::destroy end");
 }

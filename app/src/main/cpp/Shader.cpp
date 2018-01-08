@@ -25,12 +25,15 @@ void Shader::unuse() {
 
 GLuint Shader::loadShader(GLenum shaderType, const char *pSource) {
     GLuint shader = GL2::createShader(shaderType);
+    LOGI("Created shader with id %d", shader);
+
     if (shader) {
         GL2::shaderSource(shader, 1, &pSource, NULL);
         GL2::compileShader(shader);
         GLint compiled = 0;
         GL2::getShaderiv(shader, GL_COMPILE_STATUS, &compiled);
         if (!compiled) {
+            LOGE("Failed to compile source: %s", pSource);
             GLint infoLen = 0;
             GL2::getShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
             if (infoLen) {
@@ -46,6 +49,7 @@ GLuint Shader::loadShader(GLenum shaderType, const char *pSource) {
             }
         }
     }
+
     return shader;
 }
 

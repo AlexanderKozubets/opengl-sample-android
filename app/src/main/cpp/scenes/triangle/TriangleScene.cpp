@@ -8,14 +8,15 @@
 class string;
 
 TriangleScene::TriangleScene(Shader *shader) : Scene(shader) {
-
+    LOGI("TriangleScene::TriangleScene start/end");
 }
 
 TriangleScene::~TriangleScene() {
-
+    LOGI("TriangleScene::~TriangleScene start/end");
 }
 
 void TriangleScene::draw() {
+    LOGI("TriangleScene::draw start");
     GL2::clearColor(.0f, .0f, .0f, 1.0f);
     GL2::clear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
@@ -38,6 +39,7 @@ void TriangleScene::draw() {
     GL2::drawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
 
     shader->unuse();
+    LOGI("TriangleScene::draw end");
 }
 
 //TODO: move to base Scene implementation
@@ -79,8 +81,14 @@ Shader* loadShaders(JNIEnv *env, jobject shaderRepository, const char *name) {
 //    if (isCopy) {
 //        env->ReleaseStringUTFChars(vertexShader, gVertexShader);
 //    }
+    
+    LOGI("Vertex shader: %s", strVertexShader);
+    LOGI("Fragment shader: %s", strFragmentShader);
 
-    return new Shader(strVertexShader, strFragmentShader);
+    Shader *shader = new Shader(strVertexShader, strFragmentShader);
+    LOGI("Linked program: %d", shader->getId());
+
+    return shader;
 }
 
 

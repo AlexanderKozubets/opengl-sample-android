@@ -17,7 +17,7 @@ protected:
     Shader* shader;
 
 public:
-    Scene(Shader *shader) : shader(shader) {}
+    Scene(Shader *shader);
 
     virtual ~Scene();
 
