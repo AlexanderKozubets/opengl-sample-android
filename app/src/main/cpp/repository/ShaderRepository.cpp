@@ -49,15 +49,15 @@ Shader *ShaderRepository::getShader(std::string name) {
     const char *strVertexShader = env->GetStringUTFChars(vertexShader, &isCopy);
     const char *strFragmentShader = env->GetStringUTFChars(fragmentShader, &isCopy);
 
-//    if (isCopy) {
-//        env->ReleaseStringUTFChars(vertexShader, gVertexShader);
-//    }
 
     LOGI("Vertex shader: %s", strVertexShader);
     LOGI("Fragment shader: %s", strFragmentShader);
 
     Shader *shader = new Shader(strVertexShader, strFragmentShader);
     LOGI("Linked program: %d", shader->getId());
+
+    env->ReleaseStringUTFChars(vertexShader, strVertexShader);
+    env->ReleaseStringUTFChars(vertexShader, strFragmentShader);
 
     return shader;
 }
