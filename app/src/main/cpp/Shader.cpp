@@ -56,11 +56,13 @@ GLuint Shader::loadShader(GLenum shaderType, const char *pSource) {
 GLuint Shader::createProgram(const char* pVertexSource, const char* pFragmentSource) {
     GLuint vertexShader = loadShader(GL_VERTEX_SHADER, pVertexSource);
     if (!vertexShader) {
+        LOGE("Vertex shader creation failed!");
         return 0;
     }
 
     GLuint pixelShader = loadShader(GL_FRAGMENT_SHADER, pFragmentSource);
     if (!pixelShader) {
+        LOGE("Fragment shader creation failed!");
         return 0;
     }
 
