@@ -19,12 +19,11 @@ public abstract class ShaderNativeRenderer implements GLSurfaceView.Renderer {
 
     public ShaderNativeRenderer(@NonNull ShaderRepository shaderRepository) {
         this.shaderRepository = nonNull(shaderRepository);
-        construct();
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-
+        construct();
     }
 
     @Override
