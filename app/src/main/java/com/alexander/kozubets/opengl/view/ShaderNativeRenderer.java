@@ -12,7 +12,7 @@ import static com.alexander.kozubets.opengl.utils.Preconditions.nonNull;
 public abstract class ShaderNativeRenderer implements GLSurfaceView.Renderer {
 
     @SuppressWarnings("unused")
-    private ShaderRepository shaderRepository;
+    protected final ShaderRepository shaderRepository;
 
     @SuppressWarnings("unused")
     private final long nativePointer = 0;

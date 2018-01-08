@@ -18,7 +18,7 @@ public class TriangleRenderer extends ShaderNativeRenderer {
 
     @Override
     protected void construct() {
-        constructNative();
+        constructNative(shaderRepository);
     }
 
     @Override
@@ -31,18 +31,9 @@ public class TriangleRenderer extends ShaderNativeRenderer {
         drawNative();
     }
 
-    native void constructNative();
+    private native void constructNative(ShaderRepository shaderRepository);
 
-    native void initNative(int width, int height);
+    private native void initNative(int width, int height);
 
-    native void drawNative();
-
-    //    @Override
-//    protected native void construct();
-//
-//    @Override
-//    protected native void init(int width, int height);
-//
-//    @Override
-//    protected native void draw();
+    private native void drawNative();
 }
