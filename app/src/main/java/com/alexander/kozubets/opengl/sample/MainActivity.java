@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         glSurfaceView = (GLSurfaceView) findViewById(R.id.glView);
         shaderRepository = new AssetsShaderRepository(getApplicationContext(), "shaders");
         renderer = new TriangleRenderer(shaderRepository);
+        glSurfaceView.setPreserveEGLContextOnPause(true);
         glSurfaceView.setRenderer(renderer);
         findViewById(R.id.btnLoadTexture).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +54,18 @@ public class MainActivity extends AppCompatActivity {
                 pickImage();
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        glSurfaceView.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        glSurfaceView.onPause();
+        super.onStop();
     }
 
     protected void runOnGlThread(Runnable action) {
