@@ -27,7 +27,7 @@ public class LoadBitmapAsyncTask extends AsyncTask<InputStream, Float, Bitmap> {
         return bitmap;
     }
 
-    // TODO: 11/8/17 reuse somewhere or delete
+    // TODO: pass pixels to native code and create texture there
     /*private byte[] getPixels(Bitmap src) {
         int bytes = src.getByteCount();
         ByteBuffer buffer = ByteBuffer.allocate(bytes);

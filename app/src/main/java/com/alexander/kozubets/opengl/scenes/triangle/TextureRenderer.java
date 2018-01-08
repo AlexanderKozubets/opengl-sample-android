@@ -16,6 +16,10 @@ public class TextureRenderer extends ShaderNativeRenderer {
         super(shaderRepository);
     }
 
+    public void onTextureLoaded(int textureId) {
+        onTextureLoadedNative(textureId);
+    }
+
     @Override
     protected void construct() {
         constructNative(shaderRepository);
@@ -34,6 +38,8 @@ public class TextureRenderer extends ShaderNativeRenderer {
     private native void constructNative(ShaderRepository shaderRepository);
 
     private native void initNative(int width, int height);
+
+    private native void onTextureLoadedNative(int textureId);
 
     private native void drawNative();
 }

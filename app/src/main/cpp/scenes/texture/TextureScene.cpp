@@ -1,7 +1,8 @@
 #include <gl_wrapper/GL2.h>
 #include "TextureScene.h"
 
-TextureScene::TextureScene(ShaderRepository *shaderRepository) : Scene(shaderRepository), textureId(0) {
+TextureScene::TextureScene(ShaderRepository *shaderRepository) : Scene(shaderRepository),
+                                                                 textureId(0) {
     LOGI("TextureScene::TextureScene start");
     textureShader = shaderRepository->getShader("draw_texture");
     LOGI("Texture shader id: %d", textureShader->getId());
@@ -82,4 +83,14 @@ JNIEXPORT void JNICALL
 Java_com_alexander_kozubets_opengl_scenes_triangle_TextureRenderer_drawNative(JNIEnv *env,
                                                                               jobject instance) {
     Scene::getNativeScene(env, instance)->draw();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_alexander_kozubets_opengl_scenes_triangle_TextureRenderer_onTextureLoadedNative(
+        JNIEnv *env,
+        jobject instance,
+        jint textureId) {
+    TextureScene *scene = reinterpret_cast<TextureScene *>(Scene::getNativeScene(env, instance));
+    scene->setTexture((GLuint) textureId);
 }
