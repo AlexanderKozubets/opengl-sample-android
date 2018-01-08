@@ -6,12 +6,15 @@ import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.alexander.kozubets.opengl.scenes.triangle.TextureRenderer;
+import com.alexander.kozubets.opengl.scenes.triangle.TriangleRenderer;
 import com.alexander.kozubets.opengl.task.LoadBitmapAsyncTask;
 import com.alexander.kozubets.opengl.utils.CreateTexture;
 import com.alexander.kozubets.opengl.utils.StreamUtils;
@@ -39,11 +42,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initView();
+        initGlView();
+        initMenu();
     }
 
-    protected void initView() {
-        glSurfaceView = (GLSurfaceView) findViewById(R.id.glView);
+    protected void initGlView() {
+        glSurfaceView = findViewById(R.id.glView);
         shaderRepository = new AssetsShaderRepository(getApplicationContext(), "shaders");
         renderer = new TextureRenderer(shaderRepository);
         glSurfaceView.setPreserveEGLContextOnPause(true);
@@ -52,6 +56,41 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 pickImage();
+            }
+        });
+    }
+
+    protected void initMenu() {
+        NavigationView navigationView = findViewById(R.id.navigation);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                ShaderNativeRenderer renderer = null;
+
+                switch (item.getItemId()) {
+                    case R.id.btnTriangle: {
+                        renderer = new TriangleRenderer(shaderRepository);
+                    } break;
+
+                    case R.id.btnSquare: {
+
+                    } break;
+
+                    case R.id.btnTexture: {
+                        renderer = new TextureRenderer(shaderRepository);
+                    } break;
+
+                    case R.id.btnTransform: {
+
+                    } break;
+                }
+
+                if (renderer != null) {
+                    MainActivity.this.renderer = renderer;
+                    glSurfaceView.setRenderer(renderer);
+                }
+
+                return true;
             }
         });
     }
