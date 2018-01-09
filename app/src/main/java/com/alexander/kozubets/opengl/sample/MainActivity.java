@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.alexander.kozubets.opengl.renderer.TextureProjectionRenderer;
 import com.alexander.kozubets.opengl.renderer.TextureRenderer;
 import com.alexander.kozubets.opengl.renderer.TriangleRenderer;
 import com.alexander.kozubets.opengl.task.LoadBitmapAsyncTask;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                     } break;
 
                     case R.id.btnTransform: {
-
+                        renderer = new TextureProjectionRenderer(shaderRepository);
                     } break;
                 }
 
@@ -154,6 +155,8 @@ public class MainActivity extends AppCompatActivity {
     private void onTextureLoaded(int textureId) {
         if (renderer instanceof TextureRenderer) {
             ((TextureRenderer) renderer).onTextureLoaded(textureId);
+        } else if (renderer instanceof TextureProjectionRenderer) {
+            ((TextureProjectionRenderer) renderer).onTextureLoaded(textureId);
         }
     }
 

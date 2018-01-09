@@ -14,6 +14,8 @@ public:
 
     virtual ~TransformationScene();
 
+    virtual void init(int w, int h);
+
     virtual void setTexture(GLuint texId);
 
     virtual void draw();
