@@ -13,11 +13,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.alexander.kozubets.opengl.scenes.triangle.TextureRenderer;
-import com.alexander.kozubets.opengl.scenes.triangle.TriangleRenderer;
+import com.alexander.kozubets.opengl.renderer.TextureRenderer;
+import com.alexander.kozubets.opengl.renderer.TriangleRenderer;
 import com.alexander.kozubets.opengl.task.LoadBitmapAsyncTask;
 import com.alexander.kozubets.opengl.utils.CreateTexture;
 import com.alexander.kozubets.opengl.utils.StreamUtils;
+import com.alexander.kozubets.opengl.view.AssetsShaderRepository;
 import com.alexander.kozubets.opengl.view.ShaderNativeRenderer;
 
 import java.io.IOException;

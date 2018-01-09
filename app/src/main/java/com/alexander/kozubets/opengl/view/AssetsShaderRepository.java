@@ -1,11 +1,9 @@
-package com.alexander.kozubets.opengl.sample;
+package com.alexander.kozubets.opengl.view;
 
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
-import com.alexander.kozubets.opengl.view.ShaderRepository;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -6,8 +6,6 @@
 #include <repository/ShaderRepository.h>
 #include "TriangleScene.h"
 
-class string;
-
 TriangleScene::TriangleScene(ShaderRepository *shaderRepository) : Scene(shaderRepository) {
     LOGI("TriangleScene::TriangleScene start");
     colorShader = shaderRepository->getShader("draw_color");
@@ -55,7 +53,7 @@ void TriangleScene::draw() {
 extern "C" {
 
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_constructNative(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_renderer_TriangleRenderer_constructNative(JNIEnv *env,
                                                                                     jobject instance,
                                                                                     jobject shaderRepository) {
     TriangleScene *triangleScene = new TriangleScene(new ShaderRepository(env, shaderRepository));
@@ -63,7 +61,7 @@ Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_constructNat
 }
 
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_initNative(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_renderer_TriangleRenderer_initNative(JNIEnv *env,
                                                                                jobject instance,
                                                                                jint width,
                                                                                jint height) {
@@ -71,7 +69,7 @@ Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_initNative(J
 }
 
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_scenes_triangle_TriangleRenderer_drawNative(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_renderer_TriangleRenderer_drawNative(JNIEnv *env,
                                                                                jobject instance) {
     Scene::getNativeScene(env, instance)->draw();
 }

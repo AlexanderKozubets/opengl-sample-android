@@ -1,4 +1,4 @@
-package com.alexander.kozubets.opengl.scenes.triangle;
+package com.alexander.kozubets.opengl.renderer;
 
 
 import android.support.annotation.NonNull;

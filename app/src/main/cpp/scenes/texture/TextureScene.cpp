@@ -62,7 +62,7 @@ void TextureScene::draw() {
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_scenes_triangle_TextureRenderer_constructNative(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_renderer_TextureRenderer_constructNative(JNIEnv *env,
                                                                                    jobject instance,
                                                                                    jobject shaderRepository) {
     TextureScene *textureScene = new TextureScene(new ShaderRepository(env, shaderRepository));
@@ -71,7 +71,7 @@ Java_com_alexander_kozubets_opengl_scenes_triangle_TextureRenderer_constructNati
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_scenes_triangle_TextureRenderer_initNative(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_renderer_TextureRenderer_initNative(JNIEnv *env,
                                                                               jobject instance,
                                                                               jint width,
                                                                               jint height) {
@@ -80,14 +80,14 @@ Java_com_alexander_kozubets_opengl_scenes_triangle_TextureRenderer_initNative(JN
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_scenes_triangle_TextureRenderer_drawNative(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_renderer_TextureRenderer_drawNative(JNIEnv *env,
                                                                               jobject instance) {
     Scene::getNativeScene(env, instance)->draw();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_scenes_triangle_TextureRenderer_onTextureLoadedNative(
+Java_com_alexander_kozubets_opengl_renderer_TextureRenderer_onTextureLoadedNative(
         JNIEnv *env,
         jobject instance,
         jint textureId) {
