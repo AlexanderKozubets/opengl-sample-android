@@ -3,7 +3,6 @@ package com.alexander.kozubets.opengl.sample;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
@@ -11,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -83,13 +81,8 @@ public class MainActivity extends AppCompatActivity {
                 ShaderNativeRenderer renderer = null;
 
                 switch (item.getItemId()) {
-                    case R.id.btnTriangle: {
+                    case R.id.btnPrimitives: {
                         renderer = new TriangleRenderer(shaderRepository);
-                    }
-                    break;
-
-                    case R.id.btnSquare: {
-
                     }
                     break;
 

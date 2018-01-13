@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/btnTriangle" android:title="Triangle"/>
-    <item android:id="@+id/btnSquare" android:title="Square"/>
+    <item android:id="@+id/btnPrimitives" android:title="Primitives"/>
     <item android:id="@+id/btnTexture" android:title="Texture"/>
     <item android:id="@+id/btnTransform" android:title="Transform"/>
 </menu>
