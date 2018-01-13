@@ -3,6 +3,7 @@
 #include <utils/log_macros.h>
 #include <jni.h>
 #include <string>
+#include <cmath>
 #include <repository/ShaderRepository.h>
 #include <gl_wrapper/GLDrawElementsMode.h>
 #include "TriangleScene.h"
@@ -10,6 +11,7 @@
 TriangleScene::TriangleScene(ShaderRepository *shaderRepository) : Scene(shaderRepository) {
     LOGI("TriangleScene::TriangleScene start");
     mode = GLDrawElementsMode::TRIANGLES;
+    setVerticesCount(3);
     colorShader = shaderRepository->getShader("draw_color");
     LOGI("Color shader id: %d", colorShader->getId());
     LOGI("TriangleScene::TriangleScene end");
@@ -29,6 +31,10 @@ void TriangleScene::setDrawMode(GLDrawElementsMode mode) {
     this->mode = mode;
 }
 
+void TriangleScene::setVerticesCount(int count) {
+    this->verticesCount = std::min(7, std::max(1, count));
+}
+
 void TriangleScene::draw() {
     LOGI("TriangleScene::draw start");
     float maxValue = 1.0f - 0.5f;
@@ -41,19 +47,21 @@ void TriangleScene::draw() {
     LOGI("glGetAttribLocation(\"vPosition\") = %d\n", gvPositionHandle);
 
     static const GLfloat gTriangleVertices[] = {
-            -maxValue, maxValue, 0.0f, // left top vertex,     0 index
-            -maxValue, -maxValue, 0.0f, // left bottom vertex,  1 index
-            maxValue, -maxValue, 0.0f, // right bottom vertex, 2 index
-            maxValue, maxValue, 0.0f  // right top vertex,    3 index
+            -maxValue, maxValue, 0.0f, //  square left top vertex,     0 index
+            -maxValue, -maxValue, 0.0f, // square left bottom vertex,  1 index
+            maxValue, -maxValue, 0.0f, //  square right bottom vertex, 2 index
+            maxValue, maxValue, 0.0f,  //  square right top vertex,    3 index
+            0.0f, 0.0f, 0.0f           //  square center,              4 index
     };
 
-    const GLubyte indices[] = {0, 1, 2, 2, 3, 0};
+//    const GLubyte indices[] = {0, 1, 2, 0, 2, 3};
+    const GLubyte indices[] = {0, 1, 4, 2, 3, 4};
 
     GL2::vertexAttribPointer(gvPositionHandle, 3, GL_FLOAT, GL_FALSE, 0, gTriangleVertices);
     GL2::enableVertexAttribArray(gvPositionHandle);
 
     glLineWidth(10);
-    GL2::drawElements(mode, sizeof(indices) / sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
+    GL2::drawElements(mode, verticesCount, GL_UNSIGNED_BYTE, indices);
 
     colorShader->unuse();
     LOGI("TriangleScene::draw end");
@@ -83,6 +91,14 @@ Java_com_alexander_kozubets_opengl_renderer_TriangleRenderer_setModeNative(JNIEn
                                                                            jint mode) {
     TriangleScene *scene = reinterpret_cast<TriangleScene *>(Scene::getNativeScene(env, instance));
     scene->setDrawMode((GLDrawElementsMode) mode);
+}
+
+JNIEXPORT void JNICALL
+Java_com_alexander_kozubets_opengl_renderer_TriangleRenderer_setVerticesCountNative(JNIEnv *env,
+                                                                                    jobject instance,
+                                                                                    jint count) {
+    TriangleScene *scene = reinterpret_cast<TriangleScene *>(Scene::getNativeScene(env, instance));
+    scene->setVerticesCount(count);
 }
 
 JNIEXPORT void JNICALL

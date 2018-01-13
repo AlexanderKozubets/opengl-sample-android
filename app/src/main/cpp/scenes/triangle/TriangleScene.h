@@ -10,12 +10,16 @@ private:
 
     GLDrawElementsMode mode;
 
+    int verticesCount;
+
 public:
     TriangleScene(ShaderRepository *shaderRepository);
 
     virtual ~TriangleScene();
 
     virtual void setDrawMode(GLDrawElementsMode mode);
+
+    virtual void setVerticesCount(int count);
 
     virtual void draw();
 };

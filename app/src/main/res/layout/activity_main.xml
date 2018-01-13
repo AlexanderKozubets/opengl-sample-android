@@ -19,7 +19,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
+            android:background="#aaffffff"
             android:orientation="vertical"
             app:behavior_hideable="false"
             app:behavior_peekHeight="@dimen/main_activity_parameters_title_height"

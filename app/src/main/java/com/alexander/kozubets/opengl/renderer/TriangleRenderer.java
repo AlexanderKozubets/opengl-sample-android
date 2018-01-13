@@ -20,6 +20,10 @@ public class TriangleRenderer extends ShaderNativeRenderer {
         setModeNative(mode);
     }
 
+    public void setVerticesCount(int count) {
+        setVerticesCountNative(count);
+    }
+
     @Override
     protected void construct() {
         constructNative(shaderRepository);
@@ -40,6 +44,8 @@ public class TriangleRenderer extends ShaderNativeRenderer {
     private native void initNative(int width, int height);
 
     private native void setModeNative(int mode);
+
+    private native void setVerticesCountNative(int count);
 
     private native void drawNative();
 }

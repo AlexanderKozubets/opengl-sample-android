@@ -11,10 +11,12 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.alexander.kozubets.opengl.renderer.TextureProjectionRenderer;
@@ -125,47 +127,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void initParameters(final TriangleRenderer renderer) {
-        View.OnClickListener onModeClickListener = new View.OnClickListener() {
+        SeekBar seekBar = findViewById(R.id.sbVerticesCount);
+
+        final int MAX_VERTICES_COUNT = 7;
+        seekBar.setMax(MAX_VERTICES_COUNT - 1);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onClick(View v) {
-                switch (v.getId()) {
-                    case R.id.rbPoints: {
-                        renderer.setMode(GLES20.GL_POINTS);
-                    }
-                    break;
-
-                    case R.id.rbLineLoop: {
-                        renderer.setMode(GLES20.GL_LINE_LOOP);
-                    }
-                    break;
-
-                    case R.id.rbLineStrip: {
-                        renderer.setMode(GLES20.GL_LINE_STRIP);
-                    }
-                    break;
-
-                    case R.id.rbLines: {
-                        renderer.setMode(GLES20.GL_LINES);
-                    }
-                    break;
-
-                    case R.id.rbTriangleFan: {
-                        renderer.setMode(GLES20.GL_TRIANGLE_FAN);
-                    }
-                    break;
-
-                    case R.id.rbTriangleStrip: {
-                        renderer.setMode(GLES20.GL_TRIANGLE_STRIP);
-                    }
-                    break;
-
-                    case R.id.rbTriangles: {
-                        renderer.setMode(GLES20.GL_TRIANGLES);
-                    }
-                    break;
-                }
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                renderer.setVerticesCount(progress + 1);
             }
-        };
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        View.OnClickListener onModeClickListener = new DrawElementsModeClickListener(renderer);
 
         int[] ids = {R.id.rbPoints, R.id.rbLineLoop, R.id.rbLineStrip, R.id.rbLineStrip,
                 R.id.rbTriangleStrip, R.id.rbTriangleFan, R.id.rbTriangles};
