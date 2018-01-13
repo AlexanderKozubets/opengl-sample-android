@@ -32,7 +32,7 @@ void TriangleScene::setDrawMode(GLDrawElementsMode mode) {
 }
 
 void TriangleScene::setVerticesCount(int count) {
-    this->verticesCount = std::min(7, std::max(1, count));
+    this->verticesCount = std::min(6, std::max(1, count));
 }
 
 void TriangleScene::draw() {

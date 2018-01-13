@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         SeekBar seekBar = findViewById(R.id.sbVerticesCount);
         final TextView verticesCountTitle = findViewById(R.id.tvVerticesCountTitle);
 
-        final int MAX_VERTICES_COUNT = 7;
+        final int MAX_VERTICES_COUNT = 6;
         seekBar.setMax(MAX_VERTICES_COUNT - 1);
         seekBar.setOnSeekBarChangeListener(new DefaultSeekBarListener() {
             @Override
