@@ -33,20 +33,21 @@ GLuint Shader::loadShader(GLenum shaderType, const char *pSource) {
         GLint compiled = 0;
         GL2::getShaderiv(shader, GL_COMPILE_STATUS, &compiled);
         if (!compiled) {
-            LOGE("Failed to compile source: %s", pSource);
+            LOGI("Failed to compile source: %s", pSource);
             GLint infoLen = 0;
             GL2::getShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
             if (infoLen) {
                 char* buf = (char*) malloc(infoLen);
                 if (buf) {
                     GL2::getShaderInfoLog(shader, infoLen, NULL, buf);
-                    LOGE("Could not compile shader %d:\n%s\n",
+                    LOGI("Could not compile shader %d:\n%s\n",
                          shaderType, buf);
                     free(buf);
                 }
                 GL2::deleteShader(shader);
                 shader = 0;
             }
+            LOGE("abort()");
         }
     }
 
