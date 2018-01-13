@@ -3,15 +3,20 @@ package com.alexander.kozubets.opengl.view;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+
+import java.util.logging.Handler;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class OpenGlView extends GLSurfaceView {
 
-    private RendererWrapper renderer;
+    private RendererWrapper rendererWrapper;
+
+    private OnRendererChangeListener rendererChangeListener;
 
     public OpenGlView(Context context) {
         super(context);
@@ -30,16 +35,37 @@ public class OpenGlView extends GLSurfaceView {
     @Override
     public void setRenderer(final Renderer renderer) {
         // Hack to be able to change renderers at the runtime.
-        if (this.renderer == null) {
-            this.renderer = new RendererWrapper(renderer);
-            super.setRenderer(this.renderer);
+        if (this.rendererWrapper == null) {
+            this.rendererWrapper = new RendererWrapper(renderer);
+            super.setRenderer(this.rendererWrapper);
+            notifyRendererChanged(renderer);
         } else {
             this.queueEvent(new Runnable() {
                 @Override
                 public void run() {
-                    OpenGlView.this.renderer.setRenderer(renderer);
+                    OpenGlView.this.rendererWrapper.setRenderer(renderer);
+                    notifyRendererChanged(renderer);
                 }
             });
+        }
+    }
+
+    public void setOnRendererChangeListener(OnRendererChangeListener rendererChangeListener) {
+        this.rendererChangeListener = rendererChangeListener;
+    }
+
+    private void notifyRendererChanged(final Renderer renderer) {
+        if (rendererChangeListener != null) {
+            if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+                rendererChangeListener.onRendererChanged(renderer);
+            } else {
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        rendererChangeListener.onRendererChanged(renderer);
+                    }
+                });
+            }
         }
     }
 
@@ -63,7 +89,7 @@ public class OpenGlView extends GLSurfaceView {
             this.renderer = renderer;
 
             // As these callbacks won't be called by the GCSurfaceView we call them manually
-            // to initialize renderer.
+            // to initialize rendererWrapper.
             this.renderer.onSurfaceCreated(null, lastConfig.config);
             this.renderer.onSurfaceChanged(null, lastConfig.width, lastConfig.height);
         }
@@ -99,5 +125,9 @@ public class OpenGlView extends GLSurfaceView {
 
             int height;
         }
+    }
+
+    public interface OnRendererChangeListener {
+        void onRendererChanged(Renderer renderer);
     }
 }

@@ -24,6 +24,7 @@ import com.alexander.kozubets.opengl.task.LoadBitmapAsyncTask;
 import com.alexander.kozubets.opengl.utils.CreateTexture;
 import com.alexander.kozubets.opengl.utils.StreamUtils;
 import com.alexander.kozubets.opengl.view.AssetsShaderRepository;
+import com.alexander.kozubets.opengl.view.OpenGlView;
 import com.alexander.kozubets.opengl.view.ShaderNativeRenderer;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST_CODE = 0;
 
-    private GLSurfaceView glSurfaceView;
+    private OpenGlView glView;
 
     private ViewGroup paramContainer;
 
@@ -56,17 +57,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void initGlView() {
-        glSurfaceView = findViewById(R.id.glView);
+        glView = findViewById(R.id.glView);
+        glView.setPreserveEGLContextOnPause(true);
+
+        glView.setOnRendererChangeListener(new OpenGlView.OnRendererChangeListener() {
+            @Override
+            public void onRendererChanged(GLSurfaceView.Renderer renderer) {
+                showParameters(renderer);
+            }
+        });
+
         shaderRepository = new AssetsShaderRepository(getApplicationContext(), "shaders");
-        renderer = new TextureRenderer(shaderRepository);
-        glSurfaceView.setPreserveEGLContextOnPause(true);
-        glSurfaceView.setRenderer(renderer);
-//        findViewById(R.id.btnLoadTexture).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                pickImage();
-//            }
-//        });
+        renderer = new TriangleRenderer(shaderRepository);
+        glView.setRenderer(renderer);
     }
 
     protected void initMenu() {
@@ -100,8 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (renderer != null) {
                     MainActivity.this.renderer = renderer;
-                    glSurfaceView.setRenderer(renderer);
-                    showParameters(renderer);
+                    glView.setRenderer(renderer);
                 }
 
                 return true;
@@ -110,15 +112,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void showParameters(final GLSurfaceView.Renderer renderer) {
+        paramContainer.removeAllViews();
         if (renderer instanceof TriangleRenderer) {
-            inflateParameters(R.layout.params_primitives);
+            inflateParameters(paramContainer, R.layout.params_primitives);
             initParameters((TriangleRenderer) renderer);
         }
     }
 
-    protected void inflateParameters(@LayoutRes int layoutId) {
+    protected void inflateParameters(ViewGroup paramContainer, @LayoutRes int layoutId) {
         LayoutInflater inflater = LayoutInflater.from(this);
-        paramContainer.removeAllViews();
         inflater.inflate(layoutId, paramContainer, true);
     }
 
@@ -129,31 +131,38 @@ public class MainActivity extends AppCompatActivity {
                 switch (v.getId()) {
                     case R.id.rbPoints: {
                         renderer.setMode(GLES20.GL_POINTS);
-                    } break;
+                    }
+                    break;
 
                     case R.id.rbLineLoop: {
                         renderer.setMode(GLES20.GL_LINE_LOOP);
-                    } break;
+                    }
+                    break;
 
                     case R.id.rbLineStrip: {
                         renderer.setMode(GLES20.GL_LINE_STRIP);
-                    } break;
+                    }
+                    break;
 
                     case R.id.rbLines: {
                         renderer.setMode(GLES20.GL_LINES);
-                    } break;
+                    }
+                    break;
 
                     case R.id.rbTriangleFan: {
                         renderer.setMode(GLES20.GL_TRIANGLE_FAN);
-                    } break;
+                    }
+                    break;
 
                     case R.id.rbTriangleStrip: {
                         renderer.setMode(GLES20.GL_TRIANGLE_STRIP);
-                    } break;
+                    }
+                    break;
 
                     case R.id.rbTriangles: {
                         renderer.setMode(GLES20.GL_TRIANGLES);
-                    } break;
+                    }
+                    break;
                 }
             }
         };
@@ -168,17 +177,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        glSurfaceView.onResume();
+        glView.onResume();
     }
 
     @Override
     protected void onStop() {
-        glSurfaceView.onPause();
+        glView.onPause();
         super.onStop();
     }
 
     protected void runOnGlThread(Runnable action) {
-        glSurfaceView.queueEvent(action);
+        glView.queueEvent(action);
     }
 
     @Override
