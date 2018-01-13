@@ -27,16 +27,17 @@ void TextureScene::setTexture(GLuint texId) {
 }
 
 void TextureScene::draw() {
-    GL2::clearColor(.0f, .0f, .0f, 1.0f);
+    GL2::clearColor(1.0f, 1.0f, 1.0f, 1.0f);
     GL2::clear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     textureShader->use();
 
+    float maxValue = 0.75f;
     static const GLfloat gTriangleVertices[] = {
-            -1.0f, 1.0f, 0.0f, // left top vertex,     0 index
-            -1.0f, -1.0f, 0.0f, // left bottom vertex,  1 index
-            1.0f, -1.0f, 0.0f, // right bottom vertex, 2 index
-            1.0f, 1.0f, 0.0f  // right top vertex,    3 index
+            -maxValue, maxValue, 0.0f, // left top vertex,     0 index
+            -maxValue, -maxValue, 0.0f, // left bottom vertex,  1 index
+            maxValue, -maxValue, 0.0f, // right bottom vertex, 2 index
+            maxValue, maxValue, 0.0f  // right top vertex,    3 index
     };
 
     GLfloat texCoords[] = {
