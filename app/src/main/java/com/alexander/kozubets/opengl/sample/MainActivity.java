@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     private LoadBitmapAsyncTask loadTextureBytesAsyncTask;
 
+    private int maxSideSize;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +114,9 @@ public class MainActivity extends AppCompatActivity {
         if (renderer instanceof TriangleRenderer) {
             inflateParameters(paramContainer, R.layout.params_primitives);
             initParameters((TriangleRenderer) renderer);
+        } else if (renderer instanceof TextureRenderer) {
+            inflateParameters(paramContainer, R.layout.params_texture);
+            initParameters((TextureRenderer) renderer);
         }
     }
 
@@ -152,6 +157,20 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.rbTriangles).performClick();
     }
 
+    protected void initParameters(TextureRenderer renderer) {
+        findViewById(R.id.btnSelectTexture).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                glView.getMaxTextureSize(new OpenGlView.OnGetMaxTextureSize() {
+                    @Override
+                    public void onGetMaxTexturesSize(int maxTexSize) {
+                        pickImage(maxTexSize);
+                    }
+                });
+            }
+        });
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -181,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Uri uri = data.getData();
                 if (uri != null) {
-                    loadTexture(uri);
+                    loadTexture(uri, maxSideSize);
                 } else {
                     showMessage("Failed!");
                 }
@@ -191,21 +210,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void pickImage() {
+    private void pickImage(int maxSideSize) {
+        this.maxSideSize = maxSideSize;
+
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST_CODE);
     }
 
-    private void loadTexture(@NonNull Uri uri) {
+    private void loadTexture(@NonNull Uri uri, int maxSideSize) {
         InputStream inputStream = null;
         try {
             inputStream = getContentResolver().openInputStream(uri);
             if (loadTextureBytesAsyncTask != null) {
                 loadTextureBytesAsyncTask.cancel(true);
             }
-            loadTextureBytesAsyncTask = new CreateTextureAsyncTask(this);
+            loadTextureBytesAsyncTask = new CreateTextureAsyncTask(this, maxSideSize);
             loadTextureBytesAsyncTask.execute(inputStream);
         } catch (IOException e) {
             StreamUtils.log(e);
@@ -229,7 +250,8 @@ public class MainActivity extends AppCompatActivity {
 
         WeakReference<MainActivity> weakActivityRef;
 
-        public CreateTextureAsyncTask(MainActivity activity) {
+        public CreateTextureAsyncTask(MainActivity activity, int maxSideSize) {
+            super(maxSideSize);
             this.weakActivityRef = new WeakReference<>(activity);
         }
 
