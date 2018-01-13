@@ -2,14 +2,12 @@ package com.alexander.kozubets.opengl.view;
 
 
 import android.content.Context;
+import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.os.Looper;
 import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.util.AttributeSet;
-
-import java.util.logging.Handler;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -60,6 +58,22 @@ public class OpenGlView extends GLSurfaceView {
 
     public void setOnRendererChangeListener(OnRendererChangeListener rendererChangeListener) {
         this.rendererChangeListener = rendererChangeListener;
+    }
+
+    public void getMaxTextureSize(final OnGetMaxTextureSize callback) {
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                final int[] maxTextureSize = new int[1];
+                GLES20.glGetIntegerv(GLES20.GL_MAX_TEXTURE_SIZE, maxTextureSize, 0);
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onGetMaxTexturesSize(maxTextureSize[0]);
+                    }
+                });
+            }
+        });
     }
 
     @WorkerThread
@@ -137,5 +151,10 @@ public class OpenGlView extends GLSurfaceView {
     public interface OnRendererChangeListener {
         @MainThread
         void onRendererChanged(Renderer renderer);
+    }
+
+    public interface OnGetMaxTextureSize {
+        @MainThread
+        void onGetMaxTexturesSize(int maxTexSize);
     }
 }
