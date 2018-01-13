@@ -39,15 +39,28 @@ void TextureScene::draw() {
             1.0f, 1.0f, 0.0f  // right top vertex,    3 index
     };
 
+    GLfloat texCoords[] = {
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0
+    };
+
     const GLubyte indices[] = {0, 1, 2, 2, 3, 0};
 
     // Set vertices
-    GLuint gvPositionHandle;
-    gvPositionHandle = GL2::getAttribLocation(textureShader->getId(), "vPosition");
-    LOGI("glGetAttribLocation(\"vPosition\") = %d\n", gvPositionHandle);
+    GLuint vPositionHandle, vTexCoordHandle;
+    vPositionHandle = GL2::getAttribLocation(textureShader->getId(), "vPosition");
+    LOGI("glGetAttribLocation(\"vPosition\") = %d\n", vPositionHandle);
 
-    GL2::vertexAttribPointer(gvPositionHandle, 3, GL_FLOAT, GL_FALSE, 0, gTriangleVertices);
-    GL2::enableVertexAttribArray(gvPositionHandle);
+    vTexCoordHandle = GL2::getAttribLocation(textureShader->getId(), "vTexCoord");
+    LOGI("glGetAttribLocation(\"vTexCoord\") = %d\n", vTexCoordHandle);
+
+    GL2::vertexAttribPointer(vPositionHandle, 3, GL_FLOAT, GL_FALSE, 0, gTriangleVertices);
+    GL2::enableVertexAttribArray(vPositionHandle);
+
+    GL2::vertexAttribPointer(vTexCoordHandle, 2, GL_FLOAT, GL_FALSE, 0, texCoords);
+    GL2::enableVertexAttribArray(vTexCoordHandle);
 
     // Set texture
     GL2::activeTexture(GL_TEXTURE0);
