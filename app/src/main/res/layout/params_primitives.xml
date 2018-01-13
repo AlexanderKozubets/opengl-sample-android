@@ -3,12 +3,8 @@
 
     <TextView
         android:id="@+id/tvVerticesCountTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/vertices_count_d"
-        android:textColor="@android:color/black"
-        android:textSize="14sp" />
+        style="@style/ParamTitleStyle"
+        android:text="@string/vertices_count_d" />
 
     <SeekBar
         android:id="@+id/sbVerticesCount"
@@ -18,12 +14,8 @@
         android:layout_marginRight="24dp" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="glDrawElements mode"
-        android:textColor="@android:color/black"
-        android:textSize="14sp" />
+        style="@style/ParamTitleStyle"
+        android:text="glDrawElements mode" />
 
     <LinearLayout
         android:layout_width="match_parent"
