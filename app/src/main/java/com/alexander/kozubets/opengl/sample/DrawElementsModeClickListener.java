@@ -2,6 +2,7 @@ package com.alexander.kozubets.opengl.sample;
 
 
 import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
 import android.util.SparseIntArray;
 import android.view.View;
 
@@ -21,15 +22,23 @@ public class DrawElementsModeClickListener implements View.OnClickListener {
         viewIdRenderModePairs.put(R.id.rbTriangles, GLES20.GL_TRIANGLES);
     }
 
+    private final GLSurfaceView glSurfaceView;
+
     private final TriangleRenderer renderer;
 
-    public DrawElementsModeClickListener(TriangleRenderer renderer) {
+    public DrawElementsModeClickListener(GLSurfaceView glSurfaceView, TriangleRenderer renderer) {
+        this.glSurfaceView = glSurfaceView;
         this.renderer = renderer;
     }
 
     @Override
     public void onClick(View v) {
         final int mode = viewIdRenderModePairs.get(v.getId());
-        renderer.setMode(mode);
+        glSurfaceView.queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                renderer.setMode(mode);
+            }
+        });
     }
 }

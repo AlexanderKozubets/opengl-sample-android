@@ -2,6 +2,7 @@ package com.alexander.kozubets.opengl.view;
 
 
 import android.opengl.GLSurfaceView;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -34,6 +35,12 @@ public abstract class ShaderNativeRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 gl) {
         draw();
+    }
+
+    protected void verifyNotMainThread() {
+        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+            throw new RuntimeException("Method should NOT be called from Main Thread!");
+        }
     }
 
     protected abstract void construct();

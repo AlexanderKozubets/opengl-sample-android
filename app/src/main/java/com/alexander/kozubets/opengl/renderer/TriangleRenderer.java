@@ -17,15 +17,18 @@ public class TriangleRenderer extends ShaderNativeRenderer {
     }
 
     public void setMode(int mode) {
+        verifyNotMainThread();
         setModeNative(mode);
     }
 
     public void setVerticesCount(int count) {
+        verifyNotMainThread();
         setVerticesCountNative(count);
     }
 
     @Override
     protected void construct() {
+        verifyNotMainThread();
         constructNative(shaderRepository);
     }
 

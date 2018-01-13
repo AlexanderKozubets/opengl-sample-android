@@ -137,12 +137,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 final int verticesCount = progress + 1;
-                renderer.setVerticesCount(verticesCount);
+                glView.queueEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        renderer.setVerticesCount(verticesCount);
+                    }
+                });
                 verticesCountTitle.setText(getString(R.string.vertices_count_d, verticesCount));
             }
         });
 
-        View.OnClickListener onModeClickListener = new DrawElementsModeClickListener(renderer);
+        View.OnClickListener onModeClickListener = new DrawElementsModeClickListener(glView, renderer);
 
         int[] ids = {R.id.rbPoints, R.id.rbLineLoop, R.id.rbLineStrip, R.id.rbLineStrip,
                 R.id.rbTriangleStrip, R.id.rbTriangleFan, R.id.rbTriangles};
