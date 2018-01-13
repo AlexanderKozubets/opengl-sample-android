@@ -4,7 +4,9 @@ package com.alexander.kozubets.opengl.view;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Looper;
+import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 import android.util.AttributeSet;
 
 import java.util.logging.Handler;
@@ -38,7 +40,13 @@ public class OpenGlView extends GLSurfaceView {
         if (this.rendererWrapper == null) {
             this.rendererWrapper = new RendererWrapper(renderer);
             super.setRenderer(this.rendererWrapper);
-            notifyRendererChanged(renderer);
+            this.queueEvent(new Runnable() {
+                @Override
+                public void run() {
+                    // notify only after renderer is initialized
+                    notifyRendererChanged(renderer);
+                }
+            });
         } else {
             this.queueEvent(new Runnable() {
                 @Override
@@ -54,18 +62,15 @@ public class OpenGlView extends GLSurfaceView {
         this.rendererChangeListener = rendererChangeListener;
     }
 
+    @WorkerThread
     private void notifyRendererChanged(final Renderer renderer) {
         if (rendererChangeListener != null) {
-            if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-                rendererChangeListener.onRendererChanged(renderer);
-            } else {
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        rendererChangeListener.onRendererChanged(renderer);
-                    }
-                });
-            }
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    rendererChangeListener.onRendererChanged(renderer);
+                }
+            });
         }
     }
 
@@ -128,6 +133,7 @@ public class OpenGlView extends GLSurfaceView {
     }
 
     public interface OnRendererChangeListener {
+        @MainThread
         void onRendererChanged(Renderer renderer);
     }
 }

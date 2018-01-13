@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alexander.kozubets.opengl.renderer.TextureProjectionRenderer;
@@ -128,23 +129,16 @@ public class MainActivity extends AppCompatActivity {
 
     protected void initParameters(final TriangleRenderer renderer) {
         SeekBar seekBar = findViewById(R.id.sbVerticesCount);
+        final TextView verticesCountTitle = findViewById(R.id.tvVerticesCountTitle);
 
         final int MAX_VERTICES_COUNT = 7;
         seekBar.setMax(MAX_VERTICES_COUNT - 1);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        seekBar.setOnSeekBarChangeListener(new DefaultSeekBarListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                renderer.setVerticesCount(progress + 1);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
+                final int verticesCount = progress + 1;
+                renderer.setVerticesCount(verticesCount);
+                verticesCountTitle.setText(getString(R.string.vertices_count_d, verticesCount));
             }
         });
 
@@ -155,6 +149,9 @@ public class MainActivity extends AppCompatActivity {
         for (int id : ids) {
             paramContainer.findViewById(id).setOnClickListener(onModeClickListener);
         }
+
+        seekBar.setProgress(2); // 3 vertices as counting starts from zero
+        findViewById(R.id.rbTriangles).performClick();
     }
 
     @Override

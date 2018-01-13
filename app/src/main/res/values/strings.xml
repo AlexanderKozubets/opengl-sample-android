@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">opengl-sample-android</string>
     <string name="main_activity_parameters_title">Parameters</string>
+    <string name="vertices_count_d">Vertices count: %d</string>
 </resources>
