@@ -16,6 +16,10 @@ public class TriangleRenderer extends ShaderNativeRenderer {
         super(shaderRepository);
     }
 
+    public void setMode(int mode) {
+        setModeNative(mode);
+    }
+
     @Override
     protected void construct() {
         constructNative(shaderRepository);
@@ -34,6 +38,8 @@ public class TriangleRenderer extends ShaderNativeRenderer {
     private native void constructNative(ShaderRepository shaderRepository);
 
     private native void initNative(int width, int height);
+
+    private native void setModeNative(int mode);
 
     private native void drawNative();
 }

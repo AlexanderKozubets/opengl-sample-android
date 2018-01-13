@@ -3,14 +3,18 @@ package com.alexander.kozubets.opengl.sample;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.alexander.kozubets.opengl.renderer.TextureProjectionRenderer;
@@ -34,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
     private GLSurfaceView glSurfaceView;
 
+    private ViewGroup paramContainer;
+
     private ShaderNativeRenderer renderer;
 
     private AssetsShaderRepository shaderRepository;
@@ -44,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        paramContainer = findViewById(R.id.containerParams);
         initGlView();
         initMenu();
     }
@@ -54,12 +61,12 @@ public class MainActivity extends AppCompatActivity {
         renderer = new TextureRenderer(shaderRepository);
         glSurfaceView.setPreserveEGLContextOnPause(true);
         glSurfaceView.setRenderer(renderer);
-        findViewById(R.id.btnLoadTexture).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                pickImage();
-            }
-        });
+//        findViewById(R.id.btnLoadTexture).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                pickImage();
+//            }
+//        });
     }
 
     protected void initMenu() {
@@ -72,29 +79,90 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.btnTriangle: {
                         renderer = new TriangleRenderer(shaderRepository);
-                    } break;
+                    }
+                    break;
 
                     case R.id.btnSquare: {
 
-                    } break;
+                    }
+                    break;
 
                     case R.id.btnTexture: {
                         renderer = new TextureRenderer(shaderRepository);
-                    } break;
+                    }
+                    break;
 
                     case R.id.btnTransform: {
                         renderer = new TextureProjectionRenderer(shaderRepository);
-                    } break;
+                    }
+                    break;
                 }
 
                 if (renderer != null) {
                     MainActivity.this.renderer = renderer;
                     glSurfaceView.setRenderer(renderer);
+                    showParameters(renderer);
                 }
 
                 return true;
             }
         });
+    }
+
+    protected void showParameters(final GLSurfaceView.Renderer renderer) {
+        if (renderer instanceof TriangleRenderer) {
+            inflateParameters(R.layout.params_primitives);
+            initParameters((TriangleRenderer) renderer);
+        }
+    }
+
+    protected void inflateParameters(@LayoutRes int layoutId) {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        paramContainer.removeAllViews();
+        inflater.inflate(layoutId, paramContainer, true);
+    }
+
+    protected void initParameters(final TriangleRenderer renderer) {
+        View.OnClickListener onModeClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()) {
+                    case R.id.rbPoints: {
+                        renderer.setMode(GLES20.GL_POINTS);
+                    } break;
+
+                    case R.id.rbLineLoop: {
+                        renderer.setMode(GLES20.GL_LINE_LOOP);
+                    } break;
+
+                    case R.id.rbLineStrip: {
+                        renderer.setMode(GLES20.GL_LINE_STRIP);
+                    } break;
+
+                    case R.id.rbLines: {
+                        renderer.setMode(GLES20.GL_LINES);
+                    } break;
+
+                    case R.id.rbTriangleFan: {
+                        renderer.setMode(GLES20.GL_TRIANGLE_FAN);
+                    } break;
+
+                    case R.id.rbTriangleStrip: {
+                        renderer.setMode(GLES20.GL_TRIANGLE_STRIP);
+                    } break;
+
+                    case R.id.rbTriangles: {
+                        renderer.setMode(GLES20.GL_TRIANGLES);
+                    } break;
+                }
+            }
+        };
+
+        int[] ids = {R.id.rbPoints, R.id.rbLineLoop, R.id.rbLineStrip, R.id.rbLineStrip,
+                R.id.rbTriangleStrip, R.id.rbTriangleFan, R.id.rbTriangles};
+        for (int id : ids) {
+            paramContainer.findViewById(id).setOnClickListener(onModeClickListener);
+        }
     }
 
     @Override
