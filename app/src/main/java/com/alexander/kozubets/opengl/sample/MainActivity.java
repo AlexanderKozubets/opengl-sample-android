@@ -166,6 +166,12 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
     }
 
+    @Override
+    protected void onDestroy() {
+        glView.setRenderer(null);
+        super.onDestroy();
+    }
+
     protected void runOnGlThread(Runnable action) {
         glView.queueEvent(action);
     }

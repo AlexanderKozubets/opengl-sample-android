@@ -93,10 +93,12 @@ public class OpenGlView extends GLSurfaceView {
             }
             this.renderer = renderer;
 
-            // As these callbacks won't be called by the GCSurfaceView we call them manually
-            // to initialize rendererWrapper.
-            this.renderer.onSurfaceCreated(null, lastConfig.config);
-            this.renderer.onSurfaceChanged(null, lastConfig.width, lastConfig.height);
+            if (renderer != null) {
+                // As these callbacks won't be called by the GCSurfaceView we call them manually
+                // to initialize rendererWrapper.
+                this.renderer.onSurfaceCreated(null, lastConfig.config);
+                this.renderer.onSurfaceChanged(null, lastConfig.width, lastConfig.height);
+            }
         }
 
         @Override
