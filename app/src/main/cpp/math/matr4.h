@@ -25,7 +25,7 @@ public:
     ~matr4() {
     }
 
-    const float * ptr() const {
+    const float *ptr() const {
         return m;
     }
 
@@ -66,6 +66,62 @@ public:
                         0, 0, D, 0
                 });
     }
+    static matr4 lookAt(float eyeX, float eyeY, float eyeZ,
+                        float centerX, float centerY, float centerZ,
+                        float upX, float upY, float upZ) {
+
+        // See the OpenGL GLUT documentation for gluLookAt for a description
+        // of the algorithm. We implement it in a straightforward way:
+
+        float fx = centerX - eyeX;
+        float fy = centerY - eyeY;
+        float fz = centerZ - eyeZ;
+
+        // Normalize f
+        float rlf = 1.0f / length(fx, fy, fz);
+        fx *= rlf;
+        fy *= rlf;
+        fz *= rlf;
+
+        // compute s = f x up (x means "cross product")
+        float sx = fy * upZ - fz * upY;
+        float sy = fz * upX - fx * upZ;
+        float sz = fx * upY - fy * upX;
+
+        // and normalize s
+        float rls = 1.0f / length(sx, sy, sz);
+        sx *= rls;
+        sy *= rls;
+        sz *= rls;
+
+        // compute u = s x f
+        float ux = sy * fz - sz * fy;
+        float uy = sz * fx - sx * fz;
+        float uz = sx * fy - sy * fx;
+
+        const matr4 m = matr4(
+                new float[16]{
+                        sx, ux, -fx, 0,
+                        sy, uy, -fy, 0,
+                        sz, uz, -fz, 0,
+                        0, 0, 0, 1
+                });
+        
+        const matr4 t = translate(-eyeX, -eyeY, -eyeZ);
+
+        const matr4 result = t * m;
+
+        logMatrix("m", m);
+        logMatrix("Translate", t);
+        logMatrix("Result", result);
+
+        return result;
+    }
+
+    static float length(float x, float y, float z) {
+        return (float) sqrt(x * x + y * y + z * z);
+    }
+
     static matr4 identity() {
         return matr4(
                 new float[16]{
@@ -131,7 +187,7 @@ public:
 
     // friends defined inside class body are inline and are hidden from non-ADL lookup
     friend matr4 operator*(matr4 lhs, const matr4 &rhs) {
-        float* m = new float[16]{0};
+        float *m = new float[16]{0};
         const float *l = lhs.ptr();
         const float *r = rhs.ptr();
 
