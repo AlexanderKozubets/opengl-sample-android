@@ -7,6 +7,10 @@
 
 #include <string.h>
 #include <cmath>
+#include <utils/log_macros.h>
+
+class matr4;
+static void logMatrix(const char *name, matr4 m);
 
 class matr4 {
 private:
@@ -133,5 +137,19 @@ public:
         return matr4(m); // return the result by value (uses move constructor)
     }
 };
+
+static void logMatrix(const char *name, matr4 m) {
+    const float *p = m.ptr();
+    LOGI("Matrix %s: "
+                 "\n[%2.1f] [%2.1f] [%2.1f] [%2.1f] "
+                 "\n[%2.1f] [%2.1f] [%2.1f] [%2.1f] "
+                 "\n[%2.1f] [%2.1f] [%2.1f] [%2.1f] "
+                 "\n[%2.1f] [%2.1f] [%2.1f] [%2.1f] \n",
+         name,
+         p[0], p[1], p[2], p[3],
+         p[4], p[5], p[6], p[7],
+         p[8], p[9], p[10], p[11],
+         p[12], p[13], p[14], p[15]);
+}
 
 #endif //OPENGL_SAMPLE_ANDROID_MATR4_H
