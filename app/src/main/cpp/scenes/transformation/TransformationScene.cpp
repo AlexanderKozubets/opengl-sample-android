@@ -31,19 +31,34 @@ void TransformationScene::setTexture(GLuint texId) {
 matr4 gProjMatr = matr4::identity();
 
 void TransformationScene::draw() {
-    GL2::clearColor(.0f, .0f, .0f, 1.0f);
+    GL2::clearColor(1.0f, 1.0f, 1.0f, 1.0f);
     GL2::clear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     transformTextureShader->use();
 
+    float d = 0.5f;
     static const GLfloat gTriangleVertices[] = {
-            -1.0f, 1.0f, 0.0f, // left top vertex,     0 index
-            -1.0f, -1.0f, 0.0f, // left bottom vertex,  1 index
-            1.0f, -1.0f, 0.0f, // right bottom vertex, 2 index
-            1.0f, 1.0f, 0.0f  // right top vertex,    3 index
+            // near cube face
+            -d, d, d,  // left top vertex,     0 index
+            -d, -d, d, // left bottom vertex,  1 index
+            d, -d, d,  // right bottom vertex, 2 index
+            d, d, d,   // right top vertex,    3 index
+
+            // far cube face
+            -d, d, -d,  // left top vertex,     4 index
+            -d, -d, -d, // left bottom vertex,  5 index
+            d, -d, -d,  // right bottom vertex, 6 index
+            d, d, -d,   // right top vertex,    7 index
     };
 
-    const GLubyte indices[] = {0, 1, 2, 2, 3, 0};
+    const GLubyte indices[] = {
+            0, 1, 2, 2, 3, 0, // front face
+            6, 5, 4, 4, 7, 6, // rear face
+            4, 0, 3, 3, 7, 4, // top face
+            1, 5, 6, 6, 2, 1, // bottom face
+            4, 5, 1, 1, 0, 4, // left face
+            3, 2, 6, 6, 7, 3, // right face
+    };
 
     // Set vertices
     GLuint gvPositionHandle = GL2::getAttribLocation(transformTextureShader->getId(), "vPosition");
@@ -97,7 +112,8 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_onTextureLoadedNative(
         JNIEnv *env, jobject instance, jint textureId) {
-    TransformationScene *scene = reinterpret_cast<TransformationScene *>(Scene::getNativeScene(env, instance));
+    Scene *pScene = Scene::getNativeScene(env, instance);
+    TransformationScene *scene = reinterpret_cast<TransformationScene *>(pScene);
     scene->setTexture(textureId);
 }
 
