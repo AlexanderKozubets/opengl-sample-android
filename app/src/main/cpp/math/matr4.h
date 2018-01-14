@@ -45,6 +45,27 @@ public:
                 });
     }
 
+    static matr4 frustum(float left, float right, float bottom, float top, float near, float far) {
+        float r_width = 1.0f / (right - left);
+        float r_height = 1.0f / (top - bottom);
+        float r_depth = 1.0f / (near - far);
+
+        float x = 2.0f * (near * r_width);
+        float y = 2.0f * (near * r_height);
+
+        float A = (right + left) * r_width;
+        float B = (top + bottom) * r_height;
+        float C = (far + near) * r_depth;
+        float D = 2.0f * (far * near * r_depth);
+
+        return matr4(
+                new float[16]{
+                        x, 0, 0, 0,
+                        0, y, 0, 0,
+                        A, B, C, -1.0f,
+                        0, 0, D, 0
+                });
+    }
     static matr4 identity() {
         return matr4(
                 new float[16]{
