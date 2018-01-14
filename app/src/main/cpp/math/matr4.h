@@ -71,7 +71,29 @@ public:
                 });
     }
 
-    static matr4 rotate(float angleRad) {
+    static matr4 rotateX(float angleRad) {
+        const float a = angleRad;
+        return matr4(
+                new float[16]{
+                        1, 0, 0, 0,
+                        0, 1, 0, 0,
+                        0, cosf(a), sinf(a), 0,
+                        0, -sinf(a), cosf(a), 1
+                });
+    }
+
+    static matr4 rotateY(float angleRad) {
+        const float a = angleRad;
+        return matr4(
+                new float[16]{
+                        cosf(a), 0, -sinf(a), 0,
+                        0, 1, 0, 0,
+                        sinf(a), 0, cosf(a), 0,
+                        0, 0, 0, 1
+                });
+    }
+
+    static matr4 rotateZ(float angleRad) {
         const float a = angleRad;
         return matr4(
                 new float[16]{
