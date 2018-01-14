@@ -1,10 +1,13 @@
 #include <gl_wrapper/GL2.h>
 #include <math/matr4.h>
+#include <math.h>
 #include <scenes/triangle/TriangleScene.h>
 #include "TransformationScene.h"
 
+#define RAD(degrees) float(degrees) / 180.0f * M_PI
+
 TransformationScene::TransformationScene(ShaderRepository *shaderRepository) : Scene(
-        shaderRepository) {
+        shaderRepository), angleX(0), angleY(0), angleZ(0) {
     LOGI("TransformationScene::TransformationScene start");
     transformTextureShader = shaderRepository->getShader("draw_texture_2");
     LOGI("Texture shader id: %d", transformTextureShader->getId());
@@ -74,7 +77,8 @@ void TransformationScene::draw() {
 
     GLuint modelViewProjectionHandle = GL2::getUniformLocation(transformTextureShader->getId(),
                                                                "uMVPMatrix");
-    matr4 matrix = gProjMatr; //matr4::identity();
+//    matr4 matrix = gProjMatr; //matr4::identity();
+    matr4 matrix = gProjMatr * matr4::rotateX(angleX) * matr4::rotateY(angleY) * matr4::rotateZ(angleZ);
     GL2::uniformMatrix4fv(modelViewProjectionHandle, 1, GL_FALSE, matrix.ptr());
 
     GL2::drawElements(GL_TRIANGLES, sizeof(indices) / sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
@@ -86,7 +90,19 @@ void TransformationScene::draw() {
 void TransformationScene::init(int width, int height) {
     Scene::init(width, height);
     float aspectRatio = float(width) / height;
-    gProjMatr = matr4::ortho(-aspectRatio, aspectRatio, -1, 1, -1, 1);
+    gProjMatr = matr4::ortho(-aspectRatio * 10, aspectRatio * 10, -10, 10, -10, 10);
+}
+
+void TransformationScene::setAngleX(float angleDeg) {
+    TransformationScene::angleX = RAD(angleDeg);
+}
+
+void TransformationScene::setAngleY(float angleDeg) {
+    TransformationScene::angleY = RAD(angleDeg);
+}
+
+void TransformationScene::setAngleZ(float angleDeg) {
+    TransformationScene::angleZ = RAD(angleDeg);
 }
 
 extern "C"
@@ -115,6 +131,33 @@ Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_onTextureL
     Scene *pScene = Scene::getNativeScene(env, instance);
     TransformationScene *scene = reinterpret_cast<TransformationScene *>(pScene);
     scene->setTexture(textureId);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_setRotationXNative(
+        JNIEnv *env, jobject instance, jfloat angleDegrees) {
+    Scene *pScene = Scene::getNativeScene(env, instance);
+    TransformationScene *scene = reinterpret_cast<TransformationScene *>(pScene);
+    scene->setAngleX(angleDegrees);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_setRotationYNative(
+        JNIEnv *env, jobject instance, jfloat angleDegrees) {
+    Scene *pScene = Scene::getNativeScene(env, instance);
+    TransformationScene *scene = reinterpret_cast<TransformationScene *>(pScene);
+    scene->setAngleY(angleDegrees);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_setRotationZNative(
+        JNIEnv *env, jobject instance, jfloat angleDegrees) {
+    Scene *pScene = Scene::getNativeScene(env, instance);
+    TransformationScene *scene = reinterpret_cast<TransformationScene *>(pScene);
+    scene->setAngleZ(angleDegrees);
 }
 
 extern "C"

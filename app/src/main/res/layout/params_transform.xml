@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        style="@style/ParamTitleStyle"
+        android:text="Rotate about X" />
+
+    <SeekBar
+        android:id="@+id/sbRotateX"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:progress="50" />
+
+    <TextView
+        style="@style/ParamTitleStyle"
+        android:text="Rotate about Y" />
+
+    <SeekBar
+        android:id="@+id/sbRotateY"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:progress="50" />
+
+    <TextView
+        style="@style/ParamTitleStyle"
+        android:text="Rotate about Z" />
+
+    <SeekBar
+        android:id="@+id/sbRotateZ"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="48dp"
+        android:progress="50" />
+
+</merge>

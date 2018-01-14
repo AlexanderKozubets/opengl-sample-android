@@ -17,7 +17,23 @@ public class TextureProjectionRenderer extends ShaderNativeRenderer {
     }
 
     public void onTextureLoaded(int textureId) {
+        verifyNotMainThread();
         onTextureLoadedNative(textureId);
+    }
+
+    public void setRotationX(float angleDegrees) {
+        verifyNotMainThread();
+        setRotationXNative(angleDegrees);
+    }
+
+    public void setRotationY(float angleDegrees) {
+        verifyNotMainThread();
+        setRotationYNative(angleDegrees);
+    }
+
+    public void setRotationZ(float angleDegrees) {
+        verifyNotMainThread();
+        setRotationZNative(angleDegrees);
     }
 
     @Override
@@ -40,6 +56,12 @@ public class TextureProjectionRenderer extends ShaderNativeRenderer {
     private native void initNative(int width, int height);
 
     private native void onTextureLoadedNative(int textureId);
+
+    private native void setRotationXNative(float angleDegrees);
+
+    private native void setRotationYNative(float angleDegrees);
+
+    private native void setRotationZNative(float angleDegrees);
 
     private native void drawNative();
 }

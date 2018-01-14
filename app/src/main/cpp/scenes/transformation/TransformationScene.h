@@ -9,6 +9,12 @@ private:
 
     GLuint textureId;
 
+    float angleX;
+
+    float angleY;
+
+    float angleZ;
+
 public:
     TransformationScene(ShaderRepository *shaderRepository);
 
@@ -17,6 +23,12 @@ public:
     virtual void init(int w, int h);
 
     virtual void setTexture(GLuint texId);
+
+    void setAngleX(float angleDeg);
+
+    void setAngleY(float angleDeg);
+
+    void setAngleZ(float angleDeg);
 
     virtual void draw();
 };

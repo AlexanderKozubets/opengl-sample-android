@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.support.annotation.IntRange;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -117,6 +118,10 @@ public class MainActivity extends AppCompatActivity {
         } else if (renderer instanceof TextureRenderer) {
             inflateParameters(paramContainer, R.layout.params_texture);
             initParameters((TextureRenderer) renderer);
+        } else if (renderer instanceof TextureProjectionRenderer) {
+            inflateParameters(paramContainer, R.layout.params_texture);
+            inflateParameters(paramContainer, R.layout.params_transform);
+            initParameters((TextureProjectionRenderer) renderer);
         }
     }
 
@@ -158,6 +163,60 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void initParameters(TextureRenderer renderer) {
+        findViewById(R.id.btnSelectTexture).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                glView.getMaxTextureSize(new OpenGlView.OnGetMaxTextureSize() {
+                    @Override
+                    public void onGetMaxTexturesSize(int maxTexSize) {
+                        pickImage(maxTexSize);
+                    }
+                });
+            }
+        });
+    }
+
+    protected void initParameters(final TextureProjectionRenderer renderer) {
+        SeekBar sbRotateX = findViewById(R.id.sbRotateX);
+        SeekBar sbRotateY = findViewById(R.id.sbRotateY);
+        SeekBar sbRotateZ = findViewById(R.id.sbRotateZ);
+
+        sbRotateX.setOnSeekBarChangeListener(new DefaultSeekBarListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
+                glView.queueEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        renderer.setRotationX(progressToAngle(progress));
+                    }
+                });
+            }
+        });
+
+        sbRotateY.setOnSeekBarChangeListener(new DefaultSeekBarListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
+                glView.queueEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        renderer.setRotationY(progressToAngle(progress));
+                    }
+                });
+            }
+        });
+
+        sbRotateZ.setOnSeekBarChangeListener(new DefaultSeekBarListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
+                glView.queueEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        renderer.setRotationZ(progressToAngle(progress));
+                    }
+                });
+            }
+        });
+
         findViewById(R.id.btnSelectTexture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -240,6 +299,19 @@ public class MainActivity extends AppCompatActivity {
         } else if (renderer instanceof TextureProjectionRenderer) {
             ((TextureProjectionRenderer) renderer).onTextureLoaded(textureId);
         }
+    }
+
+    /**
+     * Get angle in degrees that corresponds to {@link SeekBar#getProgress()}.
+     * Minimum progress corresponds to -180 degrees and maximum progress corresponds to 180 degrees.
+     * @param progress value from range [0; 100]
+     * @return angle in degrees.
+     */
+    private float progressToAngle(@IntRange(from = 0, to = 100) int progress) {
+        final int maxProgress = 100;
+        final int center = maxProgress / 2;
+        final float angleDegrees = (progress - center) * 180.0f / center;
+        return angleDegrees;
     }
 
     private void showMessage(@NonNull String message) {
