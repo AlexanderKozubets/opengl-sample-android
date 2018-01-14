@@ -34,10 +34,10 @@ public:
         float tz = -(far + near) / (far - near);
         return matr4(
                 new float[16]{
-                        sx, 0, 0, tx,
-                        0, sy, 0, ty,
-                        0, 0, sz, tz,
-                        0, 0, 0, 1
+                        sx, 0, 0, 0,
+                        0, sy, 0, 0,
+                        0, 0, sz, 0,
+                        tx, ty, tz, 1
                 });
     }
 
