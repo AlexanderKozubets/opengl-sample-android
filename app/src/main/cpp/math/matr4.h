@@ -29,7 +29,7 @@ public:
         return m;
     }
 
-    static matr4 ortho(float left, float right, float top, float bottom, float far, float near) {
+    static matr4 ortho(float left, float right, float bottom, float top, float near, float far) {
         float sx = 2.0f / (right - left);
         float sy = 2.0f / (top - bottom);
         float sz = 2.0f / (far - near);
@@ -109,13 +109,7 @@ public:
         
         const matr4 t = translate(-eyeX, -eyeY, -eyeZ);
 
-        const matr4 result = t * m;
-
-        logMatrix("m", m);
-        logMatrix("Translate", t);
-        logMatrix("Result", result);
-
-        return result;
+        return m * t;
     }
 
     static float length(float x, float y, float z) {
@@ -185,33 +179,66 @@ public:
                 });
     }
 
-    // friends defined inside class body are inline and are hidden from non-ADL lookup
-    friend matr4 operator*(matr4 lhs, const matr4 &rhs) {
-        float *m = new float[16]{0};
+    friend matr4 operator*(const matr4 lhs, const matr4 &rhs) {
+//        float *m = new float[16]{0};
         const float *l = lhs.ptr();
         const float *r = rhs.ptr();
+//
+//        m[0] = l[0] * r[0] + l[1] * r[4] + l[2] * r[8] + l[3] * r[12];
+//        m[1] = l[0] * r[1] + l[1] * r[5] + l[2] * r[9] + l[3] * r[13];
+//        m[2] = l[0] * r[2] + l[1] * r[6] + l[2] * r[10] + l[3] * r[14];
+//        m[3] = l[0] * r[3] + l[1] * r[7] + l[2] * r[11] + l[3] * r[15];
+//
+//        m[4] = l[4] * r[0] + l[5] * r[4] + l[6] * r[8] + l[7] * r[12];
+//        m[5] = l[4] * r[1] + l[5] * r[5] + l[6] * r[9] + l[7] * r[13];
+//        m[6] = l[4] * r[2] + l[5] * r[6] + l[6] * r[10] + l[7] * r[14];
+//        m[7] = l[4] * r[3] + l[5] * r[7] + l[6] * r[11] + l[7] * r[15];
+//
+//        m[8] = l[8] * r[0] + l[9] * r[4] + l[10] * r[8] + l[11] * r[12];
+//        m[9] = l[8] * r[1] + l[9] * r[5] + l[10] * r[9] + l[11] * r[13];
+//        m[10] = l[8] * r[2] + l[9] * r[6] + l[10] * r[10] + l[11] * r[14];
+//        m[11] = l[8] * r[3] + l[9] * r[7] + l[10] * r[11] + l[11] * r[15];
+//
+//        m[12] = l[12] * r[0] + l[13] * r[4] + l[14] * r[8] + l[15] * r[12];
+//        m[13] = l[12] * r[1] + l[13] * r[5] + l[14] * r[9] + l[15] * r[13];
+//        m[14] = l[12] * r[2] + l[13] * r[6] + l[14] * r[10] + l[15] * r[14];
+//        m[15] = l[12] * r[3] + l[13] * r[7] + l[14] * r[11] + l[15] * r[15];
+//
+//        const matr4 result1 = matr4(m);
+//        logMatrix("Result1", result1);
 
-        m[0] = l[0] * r[0] + l[1] * r[4] + l[2] * r[8] + l[3] * r[12];
-        m[1] = l[0] * r[1] + l[1] * r[5] + l[2] * r[9] + l[3] * r[13];
-        m[2] = l[0] * r[2] + l[1] * r[6] + l[2] * r[10] + l[3] * r[14];
-        m[3] = l[0] * r[3] + l[1] * r[7] + l[2] * r[11] + l[3] * r[15];
+        float *mm = new float[16]{0};
+        multiplyMM(mm, l, r);
 
-        m[4] = l[4] * r[0] + l[5] * r[4] + l[6] * r[8] + l[7] * r[12];
-        m[5] = l[4] * r[1] + l[5] * r[5] + l[6] * r[9] + l[7] * r[13];
-        m[6] = l[4] * r[2] + l[5] * r[6] + l[6] * r[10] + l[7] * r[14];
-        m[7] = l[4] * r[3] + l[5] * r[7] + l[6] * r[11] + l[7] * r[15];
+        const matr4 result2 = matr4(mm);
+//        logMatrix("Result2", result2);
 
-        m[8] = l[8] * r[0] + l[9] * r[4] + l[10] * r[8] + l[11] * r[12];
-        m[9] = l[8] * r[1] + l[9] * r[5] + l[10] * r[9] + l[11] * r[13];
-        m[10] = l[8] * r[2] + l[9] * r[6] + l[10] * r[10] + l[11] * r[14];
-        m[11] = l[8] * r[3] + l[9] * r[7] + l[10] * r[11] + l[11] * r[15];
+        return result2;
+    }
 
-        m[12] = l[12] * r[0] + l[13] * r[4] + l[14] * r[8] + l[15] * r[12];
-        m[13] = l[12] * r[1] + l[13] * r[5] + l[14] * r[9] + l[15] * r[13];
-        m[14] = l[12] * r[2] + l[13] * r[6] + l[14] * r[10] + l[15] * r[14];
-        m[15] = l[12] * r[3] + l[13] * r[7] + l[14] * r[11] + l[15] * r[15];
+#define I(_i, _j) ((_j)+ 4*(_i))
 
-        return matr4(m); // return the result by value (uses move constructor)
+    // Native implementation of android.opengl.Matrix#multiplyMM java method
+    // Source: /frameworks/base/core/jni/android/opengl/util.cpp
+    static void multiplyMM(float *r, const float *lhs, const float *rhs) {
+        for (int i = 0; i < 4; i++) {
+            register const float rhs_i0 = rhs[I(i, 0)];
+            register float ri0 = lhs[I(0, 0)] * rhs_i0;
+            register float ri1 = lhs[I(0, 1)] * rhs_i0;
+            register float ri2 = lhs[I(0, 2)] * rhs_i0;
+            register float ri3 = lhs[I(0, 3)] * rhs_i0;
+            for (int j = 1; j < 4; j++) {
+                register const float rhs_ij = rhs[I(i, j)];
+                ri0 += lhs[I(j, 0)] * rhs_ij;
+                ri1 += lhs[I(j, 1)] * rhs_ij;
+                ri2 += lhs[I(j, 2)] * rhs_ij;
+                ri3 += lhs[I(j, 3)] * rhs_ij;
+            }
+            r[I(i, 0)] = ri0;
+            r[I(i, 1)] = ri1;
+            r[I(i, 2)] = ri2;
+            r[I(i, 3)] = ri3;
+        }
     }
 };
 

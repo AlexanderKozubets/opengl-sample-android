@@ -1,13 +1,13 @@
 #include <gl_wrapper/GL2.h>
 #include <math/matr4.h>
-#include <math.h>
 #include <scenes/triangle/TriangleScene.h>
 #include "TransformationScene.h"
 
 #define RAD(degrees) float(degrees) / 180.0f * M_PI
 
 TransformationScene::TransformationScene(ShaderRepository *shaderRepository) : Scene(
-        shaderRepository), angleX(0), angleY(0), angleZ(0) {
+        shaderRepository), angleX(0), angleY(0), angleZ(0),
+        projMatr(matr4::identity()), viewMatr(matr4::identity()), modelMatr(matr4::identity()) {
     LOGI("TransformationScene::TransformationScene start");
     transformTextureShader = shaderRepository->getShader("draw_texture_2");
     LOGI("Texture shader id: %d", transformTextureShader->getId());
@@ -31,11 +31,15 @@ void TransformationScene::setTexture(GLuint texId) {
     textureId = texId;
 }
 
-matr4 gProjMatr = matr4::identity();
-
 void TransformationScene::draw() {
     GL2::clearColor(1.0f, 1.0f, 1.0f, 1.0f);
     GL2::clear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+    // Enable depth buffer
+    glEnable(GL_DEPTH_TEST);
+
+    // Enable back face culling
+    glEnable(GL_CULL_FACE);
 
     transformTextureShader->use();
 
@@ -52,6 +56,7 @@ void TransformationScene::draw() {
             -d, -d, -d, // left bottom vertex,  5 index
             d, -d, -d,  // right bottom vertex, 6 index
             d, d, -d,   // right top vertex,    7 index
+
     };
 
     const GLubyte indices[] = {
@@ -65,7 +70,7 @@ void TransformationScene::draw() {
 
     // Set vertices
     GLuint gvPositionHandle = GL2::getAttribLocation(transformTextureShader->getId(), "vPosition");
-    LOGI("glGetAttribLocation(\"vPosition\") = %d\n", gvPositionHandle);
+//    LOGI("glGetAttribLocation(\"vPosition\") = %d\n", gvPositionHandle);
 
     GL2::vertexAttribPointer(gvPositionHandle, 3, GL_FLOAT, GL_FALSE, 0, gTriangleVertices);
     GL2::enableVertexAttribArray(gvPositionHandle);
@@ -77,9 +82,9 @@ void TransformationScene::draw() {
 
     GLuint modelViewProjectionHandle = GL2::getUniformLocation(transformTextureShader->getId(),
                                                                "uMVPMatrix");
-//    matr4 matrix = gProjMatr; //matr4::identity();
-    matr4 matrix = gProjMatr * matr4::rotateX(angleX) * matr4::rotateY(angleY) * matr4::rotateZ(angleZ);
-    GL2::uniformMatrix4fv(modelViewProjectionHandle, 1, GL_FALSE, matrix.ptr());
+    modelMatr = matr4::rotateX(angleX) * matr4::rotateY(angleY) * matr4::rotateZ(angleZ);
+    matr4 mvp = projMatr * viewMatr * modelMatr;
+    GL2::uniformMatrix4fv(modelViewProjectionHandle, 1, GL_FALSE, mvp.ptr());
 
     GL2::drawElements(GL_TRIANGLES, sizeof(indices) / sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
     GL2::bindTexture(GL_TEXTURE_2D, 0);
@@ -90,7 +95,8 @@ void TransformationScene::draw() {
 void TransformationScene::init(int width, int height) {
     Scene::init(width, height);
     float aspectRatio = float(width) / height;
-    gProjMatr = matr4::ortho(-aspectRatio * 10, aspectRatio * 10, -10, 10, -10, 10);
+    projMatr = matr4::frustum(-aspectRatio, aspectRatio, -1, 1, 3, 7);
+    viewMatr = matr4::lookAt(0, 0, -4, 0, 0, 0, 0, 1, 0);
 }
 
 void TransformationScene::setAngleX(float angleDeg) {

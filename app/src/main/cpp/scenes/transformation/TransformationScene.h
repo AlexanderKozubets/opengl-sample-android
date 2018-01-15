@@ -15,6 +15,12 @@ private:
 
     float angleZ;
 
+    matr4 projMatr;
+
+    matr4 viewMatr;
+
+    matr4 modelMatr;
+
 public:
     TransformationScene(ShaderRepository *shaderRepository);
 
