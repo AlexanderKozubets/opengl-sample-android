@@ -68,6 +68,19 @@ void TransformationScene::draw() {
             3, 2, 6, 6, 7, 3, // right face
     };
 
+    const float colors[] = {
+            0.0f, 1.0f, 1.0f,
+            1.0f, 0.0f, 0.0f,
+            1.0f, 1.0f, 0.0f,
+            0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 1.0f,
+            1.0f, 0.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            0.0f, 1.0f, 1.0f,
+    };
+
+    const int componentsPerColor = 3;
+
     // Set vertices
     GLuint gvPositionHandle = GL2::getAttribLocation(transformTextureShader->getId(), "vPosition");
 //    LOGI("glGetAttribLocation(\"vPosition\") = %d\n", gvPositionHandle);
@@ -85,6 +98,10 @@ void TransformationScene::draw() {
     modelMatr = matr4::rotateX(angleX) * matr4::rotateY(angleY) * matr4::rotateZ(angleZ);
     matr4 mvp = projMatr * viewMatr * modelMatr;
     GL2::uniformMatrix4fv(modelViewProjectionHandle, 1, GL_FALSE, mvp.ptr());
+
+    GLuint colorHandle = GL2::getAttribLocation(transformTextureShader->getId(), "vColor");
+    GL2::enableVertexAttribArray(colorHandle);
+    GL2::vertexAttribPointer(colorHandle, 4, GL_FLOAT, false, componentsPerColor * 4, colors);
 
     GL2::drawElements(GL_TRIANGLES, sizeof(indices) / sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
     GL2::bindTexture(GL_TEXTURE_2D, 0);
