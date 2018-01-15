@@ -148,12 +148,14 @@ public:
 
     static matr4 rotateX(float angleRad) {
         const float a = angleRad;
+        float c = cosf(a);
+        float s = sinf(a);
         return matr4(
                 new float[16]{
                         1, 0, 0, 0,
-                        0, 1, 0, 0,
-                        0, cosf(a), sinf(a), 0,
-                        0, -sinf(a), cosf(a), 1
+                        0, c, s, 0,
+                        0, -s, c, 0,
+                        0, 0, 0, 1
                 });
     }
 
