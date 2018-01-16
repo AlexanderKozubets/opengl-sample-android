@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewGroup paramContainer;
 
-    private ShaderNativeRenderer renderer;
+    private GLSurfaceView.Renderer renderer;
 
     private AssetsShaderRepository shaderRepository;
 
@@ -119,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
             inflateParameters(paramContainer, R.layout.params_texture);
             initParameters((TextureRenderer) renderer);
         } else if (renderer instanceof TextureProjectionRenderer) {
-            inflateParameters(paramContainer, R.layout.params_texture);
             inflateParameters(paramContainer, R.layout.params_transform);
             initParameters((TextureProjectionRenderer) renderer);
         }
@@ -216,18 +215,6 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-
-        findViewById(R.id.btnSelectTexture).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                glView.getMaxTextureSize(new OpenGlView.OnGetMaxTextureSize() {
-                    @Override
-                    public void onGetMaxTexturesSize(int maxTexSize) {
-                        pickImage(maxTexSize);
-                    }
-                });
-            }
-        });
     }
 
     @Override
@@ -304,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Get angle in degrees that corresponds to {@link SeekBar#getProgress()}.
      * Minimum progress corresponds to -180 degrees and maximum progress corresponds to 180 degrees.
+     *
      * @param progress value from range [0; 100]
      * @return angle in degrees.
      */
