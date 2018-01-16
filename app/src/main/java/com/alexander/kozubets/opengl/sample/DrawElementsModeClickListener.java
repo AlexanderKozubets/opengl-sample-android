@@ -6,7 +6,7 @@ import android.opengl.GLSurfaceView;
 import android.util.SparseIntArray;
 import android.view.View;
 
-import com.alexander.kozubets.opengl.renderer.TriangleRenderer;
+import com.alexander.kozubets.opengl.renderer.PrimitivesRenderer;
 
 public class DrawElementsModeClickListener implements View.OnClickListener {
 
@@ -24,9 +24,9 @@ public class DrawElementsModeClickListener implements View.OnClickListener {
 
     private final GLSurfaceView glSurfaceView;
 
-    private final TriangleRenderer renderer;
+    private final PrimitivesRenderer renderer;
 
-    public DrawElementsModeClickListener(GLSurfaceView glSurfaceView, TriangleRenderer renderer) {
+    public DrawElementsModeClickListener(GLSurfaceView glSurfaceView, PrimitivesRenderer renderer) {
         this.glSurfaceView = glSurfaceView;
         this.renderer = renderer;
     }

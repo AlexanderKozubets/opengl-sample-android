@@ -19,9 +19,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alexander.kozubets.opengl.renderer.TextureProjectionRenderer;
+import com.alexander.kozubets.opengl.renderer.CubeTransformRenderer;
 import com.alexander.kozubets.opengl.renderer.TextureRenderer;
-import com.alexander.kozubets.opengl.renderer.TriangleRenderer;
+import com.alexander.kozubets.opengl.renderer.PrimitivesRenderer;
 import com.alexander.kozubets.opengl.task.LoadBitmapAsyncTask;
 import com.alexander.kozubets.opengl.utils.CreateTexture;
 import com.alexander.kozubets.opengl.utils.StreamUtils;
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         shaderRepository = new AssetsShaderRepository(getApplicationContext(), "shaders");
-        renderer = new TriangleRenderer(shaderRepository);
+        renderer = new PrimitivesRenderer(shaderRepository);
         glView.setRenderer(renderer);
     }
 
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (item.getItemId()) {
                     case R.id.btnPrimitives: {
-                        renderer = new TriangleRenderer(shaderRepository);
+                        renderer = new PrimitivesRenderer(shaderRepository);
                     }
                     break;
 
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                     case R.id.btnTransform: {
-                        renderer = new TextureProjectionRenderer(shaderRepository);
+                        renderer = new CubeTransformRenderer(shaderRepository);
                     }
                     break;
                 }
@@ -112,15 +112,15 @@ public class MainActivity extends AppCompatActivity {
 
     protected void showParameters(final GLSurfaceView.Renderer renderer) {
         paramContainer.removeAllViews();
-        if (renderer instanceof TriangleRenderer) {
+        if (renderer instanceof PrimitivesRenderer) {
             inflateParameters(paramContainer, R.layout.params_primitives);
-            initParameters((TriangleRenderer) renderer);
+            initParameters((PrimitivesRenderer) renderer);
         } else if (renderer instanceof TextureRenderer) {
             inflateParameters(paramContainer, R.layout.params_texture);
             initParameters((TextureRenderer) renderer);
-        } else if (renderer instanceof TextureProjectionRenderer) {
+        } else if (renderer instanceof CubeTransformRenderer) {
             inflateParameters(paramContainer, R.layout.params_transform);
-            initParameters((TextureProjectionRenderer) renderer);
+            initParameters((CubeTransformRenderer) renderer);
         }
     }
 
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(layoutId, paramContainer, true);
     }
 
-    protected void initParameters(final TriangleRenderer renderer) {
+    protected void initParameters(final PrimitivesRenderer renderer) {
         SeekBar seekBar = findViewById(R.id.sbVerticesCount);
         final TextView verticesCountTitle = findViewById(R.id.tvVerticesCountTitle);
 
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    protected void initParameters(final TextureProjectionRenderer renderer) {
+    protected void initParameters(final CubeTransformRenderer renderer) {
         SeekBar sbRotateX = findViewById(R.id.sbRotateX);
         SeekBar sbRotateY = findViewById(R.id.sbRotateY);
         SeekBar sbRotateZ = findViewById(R.id.sbRotateZ);
@@ -283,8 +283,6 @@ public class MainActivity extends AppCompatActivity {
     private void onTextureLoaded(int textureId) {
         if (renderer instanceof TextureRenderer) {
             ((TextureRenderer) renderer).onTextureLoaded(textureId);
-        } else if (renderer instanceof TextureProjectionRenderer) {
-            ((TextureProjectionRenderer) renderer).onTextureLoaded(textureId);
         }
     }
 

@@ -70,7 +70,7 @@ void TriangleScene::draw() {
 extern "C" {
 
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_renderer_TriangleRenderer_constructNative(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_renderer_PrimitivesRenderer_constructNative(JNIEnv *env,
                                                                              jobject instance,
                                                                              jobject shaderRepository) {
     TriangleScene *triangleScene = new TriangleScene(new ShaderRepository(env, shaderRepository));
@@ -78,7 +78,7 @@ Java_com_alexander_kozubets_opengl_renderer_TriangleRenderer_constructNative(JNI
 }
 
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_renderer_TriangleRenderer_initNative(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_renderer_PrimitivesRenderer_initNative(JNIEnv *env,
                                                                         jobject instance,
                                                                         jint width,
                                                                         jint height) {
@@ -86,7 +86,7 @@ Java_com_alexander_kozubets_opengl_renderer_TriangleRenderer_initNative(JNIEnv *
 }
 
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_renderer_TriangleRenderer_setModeNative(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_renderer_PrimitivesRenderer_setModeNative(JNIEnv *env,
                                                                            jobject instance,
                                                                            jint mode) {
     TriangleScene *scene = reinterpret_cast<TriangleScene *>(Scene::getNativeScene(env, instance));
@@ -94,7 +94,7 @@ Java_com_alexander_kozubets_opengl_renderer_TriangleRenderer_setModeNative(JNIEn
 }
 
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_renderer_TriangleRenderer_setVerticesCountNative(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_renderer_PrimitivesRenderer_setVerticesCountNative(JNIEnv *env,
                                                                                     jobject instance,
                                                                                     jint count) {
     TriangleScene *scene = reinterpret_cast<TriangleScene *>(Scene::getNativeScene(env, instance));
@@ -102,7 +102,7 @@ Java_com_alexander_kozubets_opengl_renderer_TriangleRenderer_setVerticesCountNat
 }
 
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_renderer_TriangleRenderer_drawNative(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_renderer_PrimitivesRenderer_drawNative(JNIEnv *env,
                                                                         jobject instance) {
     Scene::getNativeScene(env, instance)->draw();
 }

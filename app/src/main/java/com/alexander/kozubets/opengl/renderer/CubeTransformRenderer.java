@@ -6,19 +6,14 @@ import android.support.annotation.NonNull;
 import com.alexander.kozubets.opengl.view.ShaderNativeRenderer;
 import com.alexander.kozubets.opengl.view.ShaderRepository;
 
-public class TextureProjectionRenderer extends ShaderNativeRenderer {
+public class CubeTransformRenderer extends ShaderNativeRenderer {
 
     static {
         System.loadLibrary("native-lib");
     }
 
-    public TextureProjectionRenderer(@NonNull ShaderRepository shaderRepository) {
+    public CubeTransformRenderer(@NonNull ShaderRepository shaderRepository) {
         super(shaderRepository);
-    }
-
-    public void onTextureLoaded(int textureId) {
-        verifyNotMainThread();
-        onTextureLoadedNative(textureId);
     }
 
     public void setRotationX(float angleDegrees) {
@@ -54,8 +49,6 @@ public class TextureProjectionRenderer extends ShaderNativeRenderer {
     private native void constructNative(ShaderRepository shaderRepository);
 
     private native void initNative(int width, int height);
-
-    private native void onTextureLoadedNative(int textureId);
 
     private native void setRotationXNative(float angleDegrees);
 

@@ -6,13 +6,13 @@ import android.support.annotation.NonNull;
 import com.alexander.kozubets.opengl.view.ShaderNativeRenderer;
 import com.alexander.kozubets.opengl.view.ShaderRepository;
 
-public class TriangleRenderer extends ShaderNativeRenderer {
+public class PrimitivesRenderer extends ShaderNativeRenderer {
 
     static {
         System.loadLibrary("native-lib");
     }
 
-    public TriangleRenderer(@NonNull ShaderRepository shaderRepository) {
+    public PrimitivesRenderer(@NonNull ShaderRepository shaderRepository) {
         super(shaderRepository);
     }
 

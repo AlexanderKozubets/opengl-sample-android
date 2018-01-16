@@ -7,8 +7,6 @@ class TransformationScene : public Scene {
 private:
     Shader* transformTextureShader;
 
-    GLuint textureId;
-
     float angleX;
 
     float angleY;
@@ -27,8 +25,6 @@ public:
     virtual ~TransformationScene();
 
     virtual void init(int w, int h);
-
-    virtual void setTexture(GLuint texId);
 
     void setAngleX(float angleDeg);
 

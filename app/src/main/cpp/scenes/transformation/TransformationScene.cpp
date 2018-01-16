@@ -20,15 +20,7 @@ TransformationScene::~TransformationScene() {
         delete transformTextureShader;
         transformTextureShader = 0;
     }
-    setTexture(0);
     LOGI("TransformationScene::~TransformationScene end");
-}
-
-void TransformationScene::setTexture(GLuint texId) {
-    if (textureId) {
-        GL2::deleteTextures(1, &textureId);
-    }
-    textureId = texId;
 }
 
 void TransformationScene::draw() {
@@ -81,30 +73,23 @@ void TransformationScene::draw() {
 
     const int componentsPerColor = 3;
 
-    // Set vertices
-    GLuint gvPositionHandle = GL2::getAttribLocation(transformTextureShader->getId(), "vPosition");
-//    LOGI("glGetAttribLocation(\"vPosition\") = %d\n", gvPositionHandle);
+    GLuint programId = transformTextureShader->getId();
 
+    GLuint gvPositionHandle = GL2::getAttribLocation(programId, "vPosition");
     GL2::vertexAttribPointer(gvPositionHandle, 3, GL_FLOAT, GL_FALSE, 0, gTriangleVertices);
     GL2::enableVertexAttribArray(gvPositionHandle);
 
-    // Set texture
-    GL2::activeTexture(GL_TEXTURE0);
-    GL2::bindTexture(GL_TEXTURE_2D, textureId);
-    GL2::uniform1i(glGetUniformLocation(transformTextureShader->getId(), "tex"), 0);
-
-    GLuint modelViewProjectionHandle = GL2::getUniformLocation(transformTextureShader->getId(),
-                                                               "uMVPMatrix");
     modelMatr = matr4::rotateX(angleX) * matr4::rotateY(angleY) * matr4::rotateZ(angleZ);
     matr4 mvp = projMatr * viewMatr * modelMatr;
+
+    GLuint modelViewProjectionHandle = GL2::getUniformLocation(programId, "uMVPMatrix");
     GL2::uniformMatrix4fv(modelViewProjectionHandle, 1, GL_FALSE, mvp.ptr());
 
-    GLuint colorHandle = GL2::getAttribLocation(transformTextureShader->getId(), "vColor");
+    GLuint colorHandle = GL2::getAttribLocation(programId, "vColor");
     GL2::enableVertexAttribArray(colorHandle);
     GL2::vertexAttribPointer(colorHandle, 4, GL_FLOAT, false, componentsPerColor * 4, colors);
 
     GL2::drawElements(GL_TRIANGLES, sizeof(indices) / sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
-    GL2::bindTexture(GL_TEXTURE_2D, 0);
 
     transformTextureShader->unuse();
 }
@@ -130,7 +115,7 @@ void TransformationScene::setAngleZ(float angleDeg) {
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_constructNative(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_renderer_CubeTransformRenderer_constructNative(JNIEnv *env,
                                                                                       jobject instance,
                                                                                       jobject shaderRepository) {
     TransformationScene *transformationScene = new TransformationScene(
@@ -140,7 +125,7 @@ Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_constructN
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_initNative(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_renderer_CubeTransformRenderer_initNative(JNIEnv *env,
                                                                                  jobject instance,
                                                                                  jint width,
                                                                                  jint height) {
@@ -149,16 +134,7 @@ Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_initNative
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_onTextureLoadedNative(
-        JNIEnv *env, jobject instance, jint textureId) {
-    Scene *pScene = Scene::getNativeScene(env, instance);
-    TransformationScene *scene = reinterpret_cast<TransformationScene *>(pScene);
-    scene->setTexture(textureId);
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_setRotationXNative(
+Java_com_alexander_kozubets_opengl_renderer_CubeTransformRenderer_setRotationXNative(
         JNIEnv *env, jobject instance, jfloat angleDegrees) {
     Scene *pScene = Scene::getNativeScene(env, instance);
     TransformationScene *scene = reinterpret_cast<TransformationScene *>(pScene);
@@ -167,7 +143,7 @@ Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_setRotatio
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_setRotationYNative(
+Java_com_alexander_kozubets_opengl_renderer_CubeTransformRenderer_setRotationYNative(
         JNIEnv *env, jobject instance, jfloat angleDegrees) {
     Scene *pScene = Scene::getNativeScene(env, instance);
     TransformationScene *scene = reinterpret_cast<TransformationScene *>(pScene);
@@ -176,7 +152,7 @@ Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_setRotatio
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_setRotationZNative(
+Java_com_alexander_kozubets_opengl_renderer_CubeTransformRenderer_setRotationZNative(
         JNIEnv *env, jobject instance, jfloat angleDegrees) {
     Scene *pScene = Scene::getNativeScene(env, instance);
     TransformationScene *scene = reinterpret_cast<TransformationScene *>(pScene);
@@ -185,7 +161,7 @@ Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_setRotatio
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_alexander_kozubets_opengl_renderer_TextureProjectionRenderer_drawNative(JNIEnv *env,
+Java_com_alexander_kozubets_opengl_renderer_CubeTransformRenderer_drawNative(JNIEnv *env,
                                                                                  jobject instance) {
     Scene::getNativeScene(env, instance)->draw();
 }
