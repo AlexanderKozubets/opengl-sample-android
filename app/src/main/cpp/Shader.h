@@ -13,7 +13,7 @@ private:
 
     GLuint id;
 
-    GLuint loadShader(GLenum shaderType, const char *pSource);
+    GLuint createShader(GLenum shaderType, const char *pSource);
 
     GLuint createProgram(const char *pVertexSource, const char *pFragmentSource);
 

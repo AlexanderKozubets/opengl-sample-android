@@ -23,7 +23,7 @@ void Shader::unuse() {
     glUseProgram(0);
 }
 
-GLuint Shader::loadShader(GLenum shaderType, const char *pSource) {
+GLuint Shader::createShader(GLenum shaderType, const char *pSource) {
     GLuint shader = GL2::createShader(shaderType);
     LOGI("Created shader with id %d", shader);
 
@@ -55,13 +55,13 @@ GLuint Shader::loadShader(GLenum shaderType, const char *pSource) {
 }
 
 GLuint Shader::createProgram(const char* pVertexSource, const char* pFragmentSource) {
-    GLuint vertexShader = loadShader(GL_VERTEX_SHADER, pVertexSource);
+    GLuint vertexShader = createShader(GL_VERTEX_SHADER, pVertexSource);
     if (!vertexShader) {
         LOGE("Vertex shader creation failed!");
         return 0;
     }
 
-    GLuint pixelShader = loadShader(GL_FRAGMENT_SHADER, pFragmentSource);
+    GLuint pixelShader = createShader(GL_FRAGMENT_SHADER, pFragmentSource);
     if (!pixelShader) {
         LOGE("Fragment shader creation failed!");
         return 0;
