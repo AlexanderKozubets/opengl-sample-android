@@ -9,7 +9,7 @@ TransformationScene::TransformationScene(ShaderRepository *shaderRepository) : S
         shaderRepository), angleX(0), angleY(0), angleZ(0),
         projMatr(matr4::identity()), viewMatr(matr4::identity()), modelMatr(matr4::identity()) {
     LOGI("TransformationScene::TransformationScene start");
-    transformTextureShader = shaderRepository->getShader("draw_texture_2");
+    transformTextureShader = shaderRepository->getShader("draw_transform");
     LOGI("Texture shader id: %d", transformTextureShader->getId());
     LOGI("TransformationScene::TransformationScene end");
 }
